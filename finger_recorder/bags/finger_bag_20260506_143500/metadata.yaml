@@ -1,0 +1,46 @@
+rosbag2_bagfile_information:
+  version: 9
+  storage_identifier: mcap
+  duration:
+    nanoseconds: 15459667142
+  starting_time:
+    nanoseconds_since_epoch: 1778096100855023766
+  message_count: 4668
+  topics_with_message_count:
+    - topic_metadata:
+        name: motor_pos_activity_feedback
+        type: finger_interfaces/msg/MotorActivity
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 1556
+    - topic_metadata:
+        name: motor_pos_setpoint_feedback
+        type: finger_interfaces/msg/MotorFeedback
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 1556
+    - topic_metadata:
+        name: motor_pos_actual_feedback
+        type: finger_interfaces/msg/MotorFeedback
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 1556
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - finger_bag_20260506_143500_0.mcap
+  files:
+    - path: finger_bag_20260506_143500_0.mcap
+      starting_time:
+        nanoseconds_since_epoch: 1778096100855023766
+      duration:
+        nanoseconds: 15459667142
+      message_count: 4668
+  custom_data: ~
+  ros_distro: kilted

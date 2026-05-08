@@ -5,7 +5,14 @@
   <version>0.0.0</version>
   <description>Identify and publish waypoints using CV</description>
   <maintainer email="michael.jenz77@gmail.com">Mjenz</maintainer>
-  <license>MIT</license>
+  <license> Apache 2.0</license>
+
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>python-opencv</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>apriltag_ros</exec_depend>
+  
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

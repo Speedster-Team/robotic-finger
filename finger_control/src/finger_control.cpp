@@ -102,17 +102,17 @@ public:
     // }
 
 
-    // // send test sinusoidal command
-    // send_sinusoid_goal(1, 2, 0.471, 10.0, 0.7);
+    // send test sinusoidal command
+    send_sinusoid_goal(1, 1, 0.2, 10.0, 0.7);
 
-    // ik demo
-    std::vector<float> start = {0.05f, 0.1f, -0.1f};            
-    std::vector<float> end   = {-0.05f, 0.1f, -0.1f};
+    // // ik demo
+    // std::vector<float> start = {0.05f, 0.1f, -0.1f};            
+    // std::vector<float> end   = {-0.05f, 0.1f, -0.1f};
                                                                 
-    for (auto i = 0; i < 20; i++) {
-        send_cartesian_goal({start, end});        
-        send_cartesian_goal({end, start});
-    }   
+    // for (auto i = 0; i < 20; i++) {
+    //     send_cartesian_goal({start, end});        
+    //     send_cartesian_goal({end, start});
+    // }   
 
   // // IK DEMO
 

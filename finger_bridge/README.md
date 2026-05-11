@@ -5,9 +5,6 @@
 ## Description
 This package serves as middleman shuffling commands between the simulation/harware and ros as well as feedback. 
 
-## Launch files
-
-
 ## Design
 
 ### Laptop - Teensy communication standard

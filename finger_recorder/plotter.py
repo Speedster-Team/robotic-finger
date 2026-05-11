@@ -10,25 +10,25 @@ from rclpy.serialization import deserialize_message
 
 import rosbag2_py
 
-JOINT_LABELS = ['splay', 'mcp_flex', 'pip/dip_flex']
+JOINT_LABELS = ['splay [rad]', 'mcp_flex [rad]', 'pip/dip_flex [rad]']
 
 TOPICS = {
-    # 'motor_pos_actual_feedback':   ('motor_pos', 'actual'),
-    # 'motor_pos_setpoint_feedback': ('motor_pos', 'setpoint'),
+    'motor_pos_actual_feedback':   ('motor_pos', 'actual'),
+    'motor_pos_setpoint_feedback': ('motor_pos', 'setpoint'),
     'actual/joint_feedback':       ('joint_angle', 'actual'),
     'setpoint/joint_feedback':     ('joint_angle', 'setpoint'),
 }
 
 data = {
-    # 'motor_pos':   {'actual': [], 'setpoint': []},
+    'motor_pos':   {'actual': [], 'setpoint': []},
     'joint_angle': {'actual': [], 'setpoint': []},
 }
 
 reader = rosbag2_py.SequentialReader()
 reader.open(
     rosbag2_py.StorageOptions(
-        uri='src/robotic-finger-simulation/finger_recorder/bags/\
-finger_bag_20260508_122811',
+        uri='src/robotic-finger/finger_recorder/bags/\
+finger_bag_20260511_142701',
         storage_id='mcap'),
     rosbag2_py.ConverterOptions('', ''))
 
@@ -44,7 +44,7 @@ while reader.has_next():
 fig, axes = plt.subplots(len(JOINT_LABELS), 2, figsize=(14, 8), sharex=True)
 
 for col, (group, title) in enumerate([('motor_pos', 'Motor Position'),
-                                       ('joint_angle', 'Joint Angle')]):
+                                      ('joint_angle', 'Joint Angle')]):
 
     for i, label in enumerate(JOINT_LABELS):
         ax = axes[i, col]

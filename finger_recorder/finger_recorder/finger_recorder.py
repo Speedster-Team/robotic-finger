@@ -30,7 +30,7 @@ class FingerRecorder(Node):
         super().__init__('finger_recorder')
         self.writer = rosbag2_py.SequentialWriter()
         storage_options = rosbag2_py.StorageOptions(
-            uri=f'src/robotic-finger-simulation/finger_recorder/bags/\
+            uri=f'src/robotic-finger/finger_recorder/bags/\
 finger_bag_{datetime.now().strftime("%Y%m%d_%H%M%S")}',
             storage_id='mcap')
         self.writer.open(storage_options, rosbag2_py.ConverterOptions('', ''))
@@ -39,13 +39,13 @@ finger_bag_{datetime.now().strftime("%Y%m%d_%H%M%S")}',
             ('motor_pos_actual_feedback',
                 'finger_interfaces/msg/MotorFeedback'),
             ('motor_pos_setpoint_feedback',
-             'finger_interfaces/msg/MotorFeedback'),
+                'finger_interfaces/msg/MotorFeedback'),
             ('motor_pos_activity_feedback',
-             'finger_interfaces/msg/MotorActivity'),
+                'finger_interfaces/msg/MotorActivity'),
             ('setpoint/joint_feedback',
-             'finger_interfaces/msg/MotorActivity'),
+                'finger_interfaces/msg/MotorActivity'),
             ('actual/joint_feedback',
-             'finger_interfaces/msg/MotorActivity'),
+                'finger_interfaces/msg/MotorActivity'),
         ]):
             self.writer.create_topic(rosbag2_py.TopicMetadata(
                 id=i, name=name, type=msg_type, serialization_format='cdr'))

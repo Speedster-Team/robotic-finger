@@ -12,7 +12,7 @@ import rclpy
 class Ros2Drake(LeafSystem):
     """Leaf system connecting ros inputs to drake."""
 
-    def __init__(self, node):
+    def __init__(self, node, setpoint_bool):
         """Create instance of MotorSystem."""
         super().__init__()
         self.nu = 3
@@ -33,13 +33,20 @@ class Ros2Drake(LeafSystem):
 
         # Set subscriber
         self._latest_position = np.zeros(self.nu)
-        self._sub = self._node.create_subscription(
-            MotorFeedback,
-            '/motor_pos_actual_feedback',
-            self._ros_position_callback,
-            10,
-        )
-
+        if setpoint_bool:
+            self._sub = self._node.create_subscription(
+                MotorFeedback,
+                '/motor_pos_setpoint_feedback',
+                self._ros_position_callback,
+                10,
+            )
+        else:
+            self._sub = self._node.create_subscription(
+                MotorFeedback,
+                '/motor_pos_actual_feedback',
+                self._ros_position_callback,
+                10,
+            )
     def _calc_position(self, context, output):
         """Input motor positions."""
         state = context.get_discrete_state(

@@ -4,6 +4,11 @@
     <choice value="false" />
   </arg>
 
+  <arg name="record" default="false" description="Enable the bagging of joint and motor position data.">
+    <choice value="true" />
+    <choice value="false" />
+  </arg>
+  
   <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share finger_simulation)/config/base_sim.rviz" if="$(eval '\'$(var use_rviz)\'==\'true\'')" on_exit="shutdown"/>  
 
   <node pkg="finger_simulation" exec="basic" namespace="actual">
@@ -25,7 +30,7 @@
 
   <node pkg="finger_control" exec="finger_control" output="screen"/>
 
-  <node pkg="finger_recorder" exec="record" output="screen"/>
+  <node pkg="finger_recorder" exec="record" if="$(eval '\'$(var record)\'==\'true\'')" output="screen"/>
 
 
 </launch>

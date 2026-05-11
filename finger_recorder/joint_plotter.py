@@ -5,7 +5,7 @@ import numpy as np
 from rclpy.serialization import deserialize_message
 import rosbag2_py
 
-JOINT_LABELS = ['splay', 'mcp_flex', 'pip/dip_flex']
+JOINT_LABELS = ['splay [rad]', 'mcp_flex [rad]', 'pip/dip_flex [rad]']
 
 TOPICS = {
     'actual/joint_feedback':   ('joint_angle', 'actual'),
@@ -19,7 +19,7 @@ data = {
 reader = rosbag2_py.SequentialReader()
 reader.open(
     rosbag2_py.StorageOptions(
-        uri='src/robotic-finger-simulation/finger_recorder/bags/finger_bag_20260508_124746',
+        uri='src/robotic-finger/finger_recorder/bags/finger_bag_20260511_140504',
         storage_id='mcap'),
     rosbag2_py.ConverterOptions('', ''))
 

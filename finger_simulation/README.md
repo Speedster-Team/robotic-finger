@@ -11,5 +11,5 @@ The URDF version (basic) does not model the four bar linkage kinematically, rath
 ## Launch files
 basic_fingersim.launch.xml - launches the drake simulation in the basic_finger_sim.py file with zero torque commanded to the joints displayed in rviz.
 
-* to launch: `ros2 launch finger_simulation 4barsim.launch.launch.xml`
-* to launch: `ros2 launch finger_simulation basic_fingersim.launch.xml`
+1. `ros2 launch finger_simulation 4barsim.launch.xml` - launches dynamic simulation of finger including closed loop 4 bar
+2. `ros2 launch finger_simulation basic_fingersim.launch.xml` - launches kinematic simulation of finger

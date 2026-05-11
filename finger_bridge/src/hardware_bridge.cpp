@@ -192,9 +192,8 @@ public:
         if (serial_interface_->get_feedback_status() == FeedbackStatus::NEW_FEEDBACK) {
           auto fb = serial_interface_->get_feedback();
 
-          motor_actual_feedback_.motor_positions = std::vector<float>(fb.begin(), fb.begin() + 3);
-          motor_setpoint_feedback_.motor_positions = std::vector<float>(fb.begin() + 3,
-          fb.begin() + 6);
+          motor_actual_feedback_.motor_positions = std::vector<float>{fb.at(0), fb.at(1), fb.at(2)};
+          motor_setpoint_feedback_.motor_positions = std::vector<float>{fb.at(3), fb.at(4), fb.at(5)};
           motor_activity_feedback_.active = fb.at(6);
 
           actual_feedback_pub_->publish(motor_actual_feedback_);

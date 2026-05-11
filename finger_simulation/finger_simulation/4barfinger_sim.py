@@ -24,6 +24,7 @@ SERVERS:
 """
 
 import os
+import sys
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -67,7 +68,7 @@ class FingerSimulation():
     def __init__(self):
         """Create instance of FingerSimulation."""
         self.builder = DiagramBuilder()
-        drake_ros.core.init()
+        drake_ros.core.init(args=sys.argv)
 
         # init time step
         self.dt = 0.001
@@ -313,24 +314,12 @@ def main():
         motor_torque_to_force_system.GetInputPort('motor_torque'),
     )
     fingersim.builder.Connect(
-        ros2drake_system.GetOutputPort('motor_position'),
-        motor_torque_to_force_system.GetInputPort('motor_position'),
-    )
-    fingersim.builder.Connect(
         motor_torque_to_force_system.GetOutputPort('tendon_tension'),
         motor_tension_to_joint_torque_system.GetInputPort('tendon_tension'),
     )
     fingersim.builder.Connect(
-        motor_torque_to_force_system.GetOutputPort('tendon_position'),
-        motor_tension_to_joint_torque_system.GetInputPort('tendon_position'),
-    )
-    fingersim.builder.Connect(
         motor_tension_to_joint_torque_system.GetOutputPort('joint_torque'),
         fingersim.plant.get_actuation_input_port(fingersim.finger),
-    )
-    fingersim.builder.Connect(
-        motor_tension_to_joint_torque_system.GetOutputPort('joint_position'),
-        fingersim.plant.get_(fingersim.finger),
     )
     fingersim.builder.Connect(
         fingersim.plant.get_state_output_port(fingersim.finger),

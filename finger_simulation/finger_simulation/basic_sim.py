@@ -302,7 +302,7 @@ def main():
     node = rclpy.create_node('drakesim')
 
        # add external systems
-    ros2drake_system = fingersim.builder.AddSystem(Ros2Drake(node))
+    ros2drake_system = fingersim.builder.AddSystem(Ros2Drake(node, False))
 
     motor_torque_to_force_system = fingersim.builder.AddSystem(
         MotorTorqueToForceSystem())

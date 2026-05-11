@@ -3,9 +3,9 @@ repositories:
     type: git
     url: https://github.com/nu-jliu/modern-robotics-cpp
     version: main
-  robotic-finger-simulation:
+  robotic-finger:
     type: git
-    url:  https://github.com/Speedster-Team/robotic-finger-simulation.git
+    url:  https://github.com/Speedster-Team/robotic-finger.git
     version: main
   serial:
     type: git

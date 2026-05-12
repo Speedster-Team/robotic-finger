@@ -10,12 +10,15 @@
         <arg name="align_depth.enable" value="true" /> -->
     </include>
 
-    <!-- <node pkg="apriltag_ros" exec="apriltag_node" output="screen">
+    <node pkg="apriltag_ros" exec="apriltag_node" output="screen">
         <remap from="image_rect" to="/camera/camera/color/image_raw" />
         <remap from="camera_info" to="/camera/camera/color/camera_info" />
         <param from="$(find-pkg-share finger_vision)/config/apriltag.yaml" />
-    </node> -->
+    </node>
 
-  <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share finger_vision)/config/vision.rviz" on_exit="shutdown"/>  
+    <node pkg="finger_vision" exec="vision" output="screen">
+        <param from="$(find-pkg-share finger_vision)/config/vision.yaml" />
+    </node>
 
+    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share finger_vision)/config/vision.rviz" on_exit="shutdown"/>
 </launch>

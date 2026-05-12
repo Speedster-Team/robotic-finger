@@ -54,9 +54,9 @@ Drake must be installed on system as well as on drake_ros built locally in a ove
 
 
 ## Launchfiles
-1. `ros2 finger_control hardware_control.launch.xml` - Launches the finger control with hardware bridge
-2. `ros2 finger_control simulation_control.launch.xml` - Launches the finger control with simulation bridge
-3. `ros2 finger_vision vision.launch.xml` - Launches the computer vision algorithm
+1. `ros2 launch finger_control hardware_control.launch.xml` - Launches the finger control with hardware bridge
+2. `ros2 launch finger_control simulation_control.launch.xml` - Launches the finger control with simulation bridge
+3. `ros2 launch finger_vision vision.launch.xml` - Launches the computer vision algorithm
 4. `ros2 launch finger_simulation 4barsim.launch.xml` - Launches dynamic simulation of finger including closed loop 4 bar
 5. `ros2 launch finger_simulation basic_fingersim.launch.xml` - Launches kinematic simulation of finger
 6. `ros2 launch finger_description fingerviz.launch.xml` - Launches kinematic visualization of finger in RVIZ

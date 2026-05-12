@@ -45,6 +45,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'vision = finger_vision.finger_vision:main'
         ],
     },
 )

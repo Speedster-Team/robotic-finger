@@ -1,0 +1,15 @@
+finger_vision:
+  ros__parameters:
+    gaussian_blur: 1
+    high_area: 22000
+    high_clip_dist: 1000
+    high_color_h: 91
+    high_color_s: 255
+    high_color_v: 205
+    low_area: 1000
+    low_clip_dist: 150
+    low_color_h: 36
+    low_color_s: 30
+    low_color_v: 163
+    start_type_description_service: true
+    use_sim_time: false

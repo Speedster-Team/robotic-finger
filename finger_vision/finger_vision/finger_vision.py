@@ -21,10 +21,10 @@ from tf2_ros import TransformBroadcaster, TransformStamped
 
 
 class FingerVision(Node):
-    """Find domino poses and publish."""
+    """Find goal poses and publish."""
 
     def __init__(self):
-        """Create instance of DominoFinder class."""
+        """Create instance of FingerVision class."""
         super().__init__('finger_vision')
 
         # declare parameters
@@ -103,7 +103,7 @@ class FingerVision(Node):
         self.d = None
         self.intrinsics = None
 
-        # init domino count variable
+        # init count variable
         self.count = 0
         self.goal_list = []
 
@@ -140,7 +140,7 @@ class FingerVision(Node):
 
         # create timer to update transforms at constant freq
         period = 1.0/20.0
-        self.process_timer = self.create_timer(period, self.process_domino)
+        self.process_timer = self.create_timer(period, self.process_image)
         period = 1.0/100.0
         self.param_timer = self.create_timer(period, self.param_timer_callback)
 
@@ -171,7 +171,7 @@ class FingerVision(Node):
         """Save depth aligned image."""
         self.depth_image = depth_image
 
-    def process_domino(self):
+    def process_image(self):
         """Publish most up to date goal positions."""
         t = self.get_clock().now().to_msg()
 
@@ -182,7 +182,7 @@ class FingerVision(Node):
             cv_depth_image = self.bridge.imgmsg_to_cv2(
                 self.depth_image, '16UC1')
 
-            # find dominoes
+            # find circles
             (
                 cv_annotated_img,
                 cv_processed_img,
@@ -207,10 +207,10 @@ class FingerVision(Node):
             self.annotated_pub.publish(annotated_img)
             self.sliced_pub.publish(sliced_img)
 
-            # save number of dominos detected
+            # save number of circles detected
             count = len(x_list)
 
-            # check if any dominos detected
+            # check if any circles detected
             if count > 0:
                 # empty the list
                 self.goal_list = []
@@ -218,7 +218,6 @@ class FingerVision(Node):
                 for ii in range(count):
                     goal_tf = TransformStamped()
                     goal_tf.header.frame_id = 'camera_color_optical_frame'
-                    goal_tf.child_frame_id = 'goal' + str(ii)
                     goal_tf.transform.translation.x = x_list[ii]
                     goal_tf.transform.translation.y = y_list[ii]
                     goal_tf.transform.translation.z = z_list[ii]
@@ -227,9 +226,10 @@ class FingerVision(Node):
                     goal_tf.transform.rotation.y = q_list[ii][2]
                     goal_tf.transform.rotation.z = q_list[ii][3]
                     goal_tf.header.stamp = t
-                    goal_tf.child_frame_id = f'domino{ii}'
+                    goal_tf.child_frame_id = f'goal{ii}'
                     self.broadcaster.sendTransform(goal_tf)
 
+    ### SLICING CURRENTLY DISABLED
     def slice_img(self, color_image, depth_image):
         """Slice image based on depth values."""
         np_img = np.asanyarray(depth_image)
@@ -350,7 +350,7 @@ class FingerVision(Node):
 
 
 def main(args=None):
-    """Run the domino finder node."""
+    """Run the circle finder node."""
     try:
         rclpy.init(args=args)
         node = FingerVision()

@@ -1,6 +1,35 @@
-"""Node to find goal positions using OpenCV and publish transforms."""
+"""
+Finds goal positions using OpenCV and publishes transforms.
 
-import math
+Processes aligned RGB-D camera streams to detect and localize a colored
+object target in 3D space. Applies a configurable HSV colorspace filter,
+bilateral and Gaussian smoothing, morphological closing, Canny edge
+detection, and contour analysis to identify the object. Reprojects the
+detected 2D centroid to 3D using depth camera intrinsics and broadcasts
+the result as a TF transform at 20 Hz. All HSV, depth clip, area, and
+blur parameters are hot-reloadable from the ROS2 parameter server at
+100 Hz.
+
+SUBSCRIBERS:
+  + /camera/camera/aligned_depth_to_color/image_raw (sensor_msgs/msg/Image)
+    - Aligned depth image used for 3D reprojection and depth-clip filtering
+  + /camera/camera/color/image_raw (sensor_msgs/msg/Image)
+    - RGB color image used for HSV-based color segmentation
+  + /camera/camera/color/camera_info (sensor_msgs/msg/CameraInfo)
+    - Camera intrinsic matrix and distortion coefficients
+
+PUBLISHERS:
+  + /processed_result_image (sensor_msgs/msg/Image)
+    - Binary HSV mask rendered as BGR for tuning and visualization
+  + /annotated_result_image (sensor_msgs/msg/Image)
+    - Original color image annotated with detected centroid marker
+  + /sliced_result_image (sensor_msgs/msg/Image)
+    - Depth-clipped color image (slicing currently disabled)
+
+BROADCASTERS:
+  + goal{i} → camera_color_optical_frame (geometry_msgs/msg/TransformStamped)
+    - Dynamic TF transform for each detected object, indexed from 0
+"""
 
 import cv2
 
@@ -229,7 +258,7 @@ class FingerVision(Node):
                     goal_tf.child_frame_id = f'goal{ii}'
                     self.broadcaster.sendTransform(goal_tf)
 
-    ### SLICING CURRENTLY DISABLED
+    # SLICING CURRENTLY DISABLED
     def slice_img(self, color_image, depth_image):
         """Slice image based on depth values."""
         np_img = np.asanyarray(depth_image)
@@ -240,13 +269,14 @@ class FingerVision(Node):
             depth_image_3d > self.max_clip_dist) | (
                 depth_image_3d < self.min_clip_dist
                 ) | (depth_image_3d <= 0), 153, color_image
-                )
-        # return sliced_img
-        return color_image
+            )
+        return sliced_img
 
     def colorspace_filter(self, color_image, depth_image):
         """Filter out colors on image."""
-        sliced_img = self.slice_img(color_image, depth_image)
+        # do not use slicing right now
+        # sliced_img = self.slice_img(color_image, depth_image)
+        sliced_img = color_image
 
         # Convert BGR to HSV
         hsv = cv2.cvtColor(sliced_img, cv2.COLOR_BGR2HSV)

@@ -39,7 +39,8 @@ public:
   /// \param q_motor_list - A nx3 matrix (vector of vectors) containing motor commands at 100hz
   /// \param length - The length of the data message
   /// \param repeat - A 1 or 0 indicating if trajectory should be repeated
-  void send_command(std::vector<std::vector<float>> q_motor_list, int length, int repeat);
+  /// \param mode - The control mode type for this trajectory
+  void send_command(std::vector<std::vector<float>> q_motor_list, int length, int repeat, char mode);
 
   /// \brief Send go command to teensy
   void send_start();

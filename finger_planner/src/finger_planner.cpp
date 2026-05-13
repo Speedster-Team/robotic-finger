@@ -481,7 +481,8 @@ private:
     const std::shared_ptr<rclcpp_action::ServerGoalHandle<ActionT>> goal_handle,
     std::shared_ptr<typename ActionT::Result> & result,
     std::function<std::vector<arma::vec>(const typename ActionT::Goal &)> generate_traj,
-    int repeat = 0)
+    int repeat = 0,
+    char mode = 'P')
   {
     if (cmd_state_ == CmdState::IDLE) {
       RCLCPP_INFO_ONCE(get_logger(), "idling...");
@@ -512,6 +513,7 @@ private:
       auto rq = std::make_shared<finger_interfaces::srv::SendCommand::Request>();
       rq->length = int(q_motor_list_.size());
       rq->repeat = repeat;
+      rq->mode = mode;
       for (auto & q : q_motor_list_) {
         rq->mcp_splay.push_back(q[0]);
         rq->mcp_flex.push_back(q[1]);
@@ -631,7 +633,8 @@ private:
           throw std::runtime_error("Waypoints malformed.");
         }
       },
-      0);
+      0,
+      'P');
   }
 
   void execute_linear_goal(const std::shared_ptr<GoalHandleLinear> goal_handle)
@@ -654,7 +657,8 @@ private:
 
         return generator_->generate_linear(start_vec, end_vec, max_vel_, max_accel_);
       },
-      0);
+      0,
+      'P');
   }
 
   void execute_sinusoidal_goal(const std::shared_ptr<GoalHandleSinusoidal> goal_handle)
@@ -676,7 +680,8 @@ private:
           throw std::runtime_error("Joint is malformed.");
         }
       },
-      goal_handle->get_goal()->repeat);
+      goal_handle->get_goal()->repeat,
+      'P');
   }
 
 };

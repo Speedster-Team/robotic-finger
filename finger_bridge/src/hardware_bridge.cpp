@@ -79,7 +79,7 @@ public:
           repeat_ = request->repeat;
 
           // send serial command
-          serial_interface_->send_command(commands_, request->length, request->repeat);
+          serial_interface_->send_command(commands_, request->length, request->repeat, request->mode);
 
           // wait for result
           while (serial_interface_->get_message_status() == MessageStatus::NO_STATUS) {}

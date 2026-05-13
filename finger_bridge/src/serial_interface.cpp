@@ -32,7 +32,7 @@ SerialInterface::SerialInterface()
 
 void SerialInterface::send_command(
   std::vector<std::vector<float>> q_motor_list, int length,
-  int repeat)
+  int repeat, char mode)
 {
   // set message status
   _msg_status = MessageStatus::NO_STATUS;
@@ -56,7 +56,7 @@ void SerialInterface::send_command(
   }
 
   // Assemble payload
-  std::string payload = "D " + std::to_string(length) + " " + std::to_string(repeat) + "\n";
+  std::string payload = "D " + std::to_string(length) + " " + std::to_string(repeat) + " " + mode + "\n";
   for (auto & line : data_lines) {
     payload += line + "\n";
   }

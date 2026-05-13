@@ -103,7 +103,7 @@ public:
 
 
     // send test sinusoidal command
-    send_sinusoid_goal(1, 2, 0.2, 10.0, 0.7);
+    send_sinusoid_goal(1, 2, 0.2, 1.0, 0.7);
 
     // // ik demo
     // std::vector<float> start = {0.05f, 0.1f, -0.1f};            

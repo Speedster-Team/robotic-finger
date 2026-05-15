@@ -11,6 +11,7 @@ find_package(rclcpp REQUIRED)
 find_package(serial REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(finger_interfaces REQUIRED)
+find_package(Armadillo REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.

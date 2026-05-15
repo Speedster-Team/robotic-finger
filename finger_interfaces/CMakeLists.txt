@@ -13,6 +13,7 @@ set(action_files
   "action/Cartesian.action"
   "action/Sinusoidal.action"
   "action/Linear.action"
+  "action/Force.action"
 )
 
 set(msg_files

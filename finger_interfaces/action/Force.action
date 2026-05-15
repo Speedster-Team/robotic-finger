@@ -1,0 +1,10 @@
+# Action message type to generate and command a step force output from the finger
+float32[] q_joint       # The joint position at which to apply the force step (x,y,z)
+float32[] force_low     # The lower bound of the force step (in Newtons) for x y z direction
+float32[] force_high    # The upper bound of the force step (in Newtons) for x y z direction
+float64 frequency       # Frequency of the force step output
+int32 repeat            # Boolean indiciating if trajecotry should be repeated
+---
+int32 success
+---
+float32[] state

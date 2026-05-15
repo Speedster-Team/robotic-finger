@@ -11,6 +11,8 @@ find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(finger_interfaces REQUIRED)
+find_package(fingerlib REQUIRED)
+find_package(modern_robotics REQUIRED)
 
 add_executable(finger_control src/finger_control.cpp)
 
@@ -20,6 +22,8 @@ target_link_libraries(finger_control
   ${std_msgs_TARGETS}
   ${std_srvs_TARGETS}
   ${finger_interfaces_TARGETS}
+  ${ARMADILLO_LIBRARIES}
+  fingerlib::fingerlib
 )
 
 if(BUILD_TESTING)

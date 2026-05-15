@@ -37,6 +37,7 @@
 #include "finger_interfaces/action/cartesian.hpp"
 #include "finger_interfaces/action/sinusoidal.hpp"
 #include "finger_interfaces/action/linear.hpp"
+#include "finger_interfaces/action/force.hpp"
 #include "finger_interfaces/msg/motor_feedback.hpp"
 #include "finger_interfaces/msg/motor_activity.hpp"
 
@@ -61,6 +62,7 @@ public:
   using GoalHandleCartesian = rclcpp_action::ServerGoalHandle<finger_interfaces::action::Cartesian>;
   using GoalHandleSinusoidal = rclcpp_action::ServerGoalHandle<finger_interfaces::action::Sinusoidal>;
   using GoalHandleLinear = rclcpp_action::ServerGoalHandle<finger_interfaces::action::Linear>;
+  using GoalHandleForce = rclcpp_action::ServerGoalHandle<finger_interfaces::action::Force>;
 
   FingerPlanner()
   : Node("finger_planner"),
@@ -69,9 +71,9 @@ public:
     Ra_ {{ra_, 0, 0},          // splay
       {0, rb_, 0},             // mcp
       {0, 0, rc_}},            // pip/dip
-    St_  {{r11_, -r3_, r1_},      // splay joint
-      {0, -r7_, -r5_},            // mcp joint
-      {0, 0, -r9_}},              // pip/dip joint
+    St_  {{-r11_, -r3_, r1_},      // splay joint
+      {0, r7_, r5_},            // mcp joint
+      {0, 0, r9_}},              // pip/dip joint
     slist_ {arma::vec6({0, 0, 1, 0, 0, 0}),
       arma::vec6({-1, 0, 0, 0, 0, 0.01776}),
       arma::vec6({-1, 0, 0, 0, 0, 0.07776}),
@@ -387,6 +389,58 @@ public:
     linear_handle_accepted,
     rcl_action_server_get_default_options(),
     action_cb_group_);
+
+    // create force step action
+    auto force_step_handle_goal = [this](
+      const rclcpp_action::GoalUUID,
+      std::shared_ptr<const finger_interfaces::action::Force::Goal> goal)
+      {
+        RCLCPP_INFO(get_logger(), "Received force step goal request:");
+
+        if ((int(goal->q_joint.size()) == 3) && (int(goal->force_low.size()) == 3) && (int(goal->force_high.size()) == 3)) {
+        
+          // accept request
+          return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+        } else {
+          // print error
+          RCLCPP_INFO(get_logger(), "Goal request REJECTED because joint state or force goals are malformed.");
+
+          // reject request
+          return rclcpp_action::GoalResponse::REJECT;
+        }
+      };
+
+    auto force_step_handle_cancel = [this](
+      const std::shared_ptr<GoalHandleForce>)
+      {
+        RCLCPP_INFO(this->get_logger(), "Received request to cancel force step goal.");
+        return rclcpp_action::CancelResponse::ACCEPT;
+      };
+
+    auto force_step_handle_accepted = [this](
+      const std::shared_ptr<GoalHandleForce> goal_handle)
+      {
+        // set cmd state
+        cmd_state_ = CmdState::BEGIN;
+
+        // init message attempts to 0 to be safe
+        msg_attempts_ = 0;
+
+        // start timer for action
+        action_timer_ = create_wall_timer(100ms, [this, goal_handle](){
+              return this->execute_force_step_goal(goal_handle);
+          },
+        timer_cb_group_);
+      };
+
+    force_step_action_server_ = rclcpp_action::create_server<finger_interfaces::action::Force>(
+    this,
+    "/force_step_move",
+    force_step_handle_goal,
+    force_step_handle_cancel,
+    force_step_handle_accepted,
+    rcl_action_server_get_default_options(),
+    action_cb_group_);
   }
 
 private:
@@ -419,12 +473,14 @@ private:
   rclcpp_action::Server<finger_interfaces::action::Cartesian>::SharedPtr cartesian_action_server_;
   rclcpp_action::Server<finger_interfaces::action::Sinusoidal>::SharedPtr sinusoidal_action_server_;
   rclcpp_action::Server<finger_interfaces::action::Linear>::SharedPtr linear_action_server_;
+  rclcpp_action::Server<finger_interfaces::action::Force>::SharedPtr force_step_action_server_;
   rclcpp::TimerBase::SharedPtr action_timer_;
   std::shared_ptr<Transformer> transforms_;
   std::shared_ptr<JointTrajectory> generator_;
   std::shared_ptr<finger_interfaces::action::Cartesian::Result> cartesian_result_;
   std::shared_ptr<finger_interfaces::action::Sinusoidal::Result> sinusoidal_result_;
   std::shared_ptr<finger_interfaces::action::Linear::Result> linear_result_;
+  std::shared_ptr<finger_interfaces::action::Force::Result> force_step_result_;
   finger_interfaces::msg::MotorFeedback motor_actual_feedback_;
   finger_interfaces::msg::MotorFeedback motor_setpoint_feedback_;
   finger_interfaces::msg::MotorActivity motor_activity_feedback_;
@@ -682,6 +738,28 @@ private:
       },
       goal_handle->get_goal()->repeat,
       'P');
+  }
+
+  void execute_force_step_goal(const std::shared_ptr<GoalHandleForce> goal_handle)
+  {
+    execute_goal<finger_interfaces::action::Force>(
+      goal_handle, force_step_result_,
+      [this](const auto & goal) {
+        
+        RCLCPP_INFO_STREAM(get_logger(), "Received force step goal request at\njoint state <" <<
+        goal.q_joint.at(0) << ", "<< goal.q_joint.at(1) << ", " << goal.q_joint.at(2) << ">\nforce_low <" <<
+        goal.force_low.at(0) << ", "<< goal.force_low.at(1) << ", " << goal.force_low.at(2) << ">\nforce_high <" <<
+        goal.force_high.at(0) << ", "<< goal.force_high.at(1) << ", " << goal.force_high.at(2) << ">\nfrequency " << goal.frequency);
+
+        // accept request
+        arma::vec q_joint = {goal.q_joint.at(0), goal.q_joint.at(1), goal.q_joint.at(2)};
+        arma::vec force_low = {goal.force_low.at(0), goal.force_low.at(1), goal.force_low.at(2)};
+        arma::vec force_high = {goal.force_high.at(0), goal.force_high.at(1), goal.force_high.at(2)};
+
+        return generator_->generate_force_step(q_joint, force_low, force_high, goal.frequency);
+      },
+      goal_handle->get_goal()->repeat,
+      'T');
   }
 
 };

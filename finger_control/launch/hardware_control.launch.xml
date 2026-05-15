@@ -28,7 +28,9 @@
     <param from="$(find-pkg-share finger_planner)/config/movement_config.yaml"/>
   </node>
 
-  <node pkg="finger_control" exec="finger_control" output="screen"/>
+  <node pkg="finger_control" exec="finger_control" output="screen">
+      <param from="$(find-pkg-share finger_planner)/config/movement_config.yaml"/>
+  </node>
   
   <node pkg="finger_recorder" exec="record" if="$(eval '\'$(var record)\'==\'true\'')" output="screen"/>
 

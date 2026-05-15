@@ -132,10 +132,13 @@ std::vector<arma::vec> JointTrajectory::generate_force_step(
     wrench.tail(3) = force_value;
 
     auto J_t = J.t();
-
+ 
     auto t_joint = J_t * wrench;  // Convert force to joint torques
 
-    t_motor_list.push_back(_transforms.joint_to_motor_torque(t_joint));
+    auto t_motor = _transforms.joint_to_motor_torque(t_joint);
+    t_motor(0) /= -3.5;
+
+    t_motor_list.push_back(t_motor);
 
     std::cout << "force_value: " << force_value.t() << std::endl;
     std::cout << "t_joint: " << t_joint.t() << std::endl;

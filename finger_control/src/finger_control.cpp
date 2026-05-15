@@ -49,7 +49,7 @@ public:
   /// \brief Create an instance of SimulationBridge
   FingerControl()
   : Node("finger_control"),
-    ra_ (0.0025), rb_ (0.0025), rc_ (0.0025),
+    ra_ (0.0075), rb_ (0.0025), rc_ (0.0025),
     r1_ (0.008), r3_ (0.0045), r5_ (0.008), r7_ (0.0045), r9_ (0.009), r11_ (ra_ * 3.5),
     Ra_ {{ra_, 0, 0},          // splay
       {0, rb_, 0},             // mcp
@@ -64,9 +64,9 @@ public:
     joint_min_ {-0.55, -0.2, -0.01},
     joint_max_ {0.55, 1.572, 1.572},
     M_ {{1, 0, 0, 0},
-      {0, 1, 0, 0.16},
-      {0, 0, 1, 0},
-      {0, 0, 0, 1}},
+        {0, 1, 0, 0.15},
+        {0, 0, 1, 0},
+        {0, 0, 0, 1}},
     four_bar_lengths_ {8.83765 * 0.001,
       40.6 * 0.001,
       8.91536 * 0.001,
@@ -181,8 +181,8 @@ public:
 
     // force control demo
     std::vector<float> q_joints = {0.0f, 0.0f, 0.0f};
-    std::vector<float> force_low = {0.0f, 0.0f, -5.0f};
-    std::vector<float> force_high = {0.0f, 0.0f, -5.0f};
+    std::vector<float> force_low = {0.0f, 0.0f, -10.0f};
+    std::vector<float> force_high = {0.0f, 0.0f, -10.0f};
 
     // send_linear_goal(q_joints);
     // rclcpp::sleep_for(3000ms);
@@ -500,10 +500,10 @@ private:
 void send_force_step_goal(std::vector<float> joint_state, std::vector<float> force_low, std::vector<float> force_high, double frequency, int repeat)
   {
     // first set the finger to the given joint state
-    send_linear_goal(joint_state);
+    // send_linear_goal(joint_state);
 
     // wait
-    rclcpp::sleep_for(3000ms);
+    // rclcpp::sleep_for(3000ms);
 
 
     auto goal_msg = finger_interfaces::action::Force::Goal();

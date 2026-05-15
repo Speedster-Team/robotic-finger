@@ -330,8 +330,8 @@ class FingerVision(Node):
 
         # Find the index of the largest contour
         areas = [cv2.contourArea(c) for c in contours]
-        max_index = np.argmax(areas)
-        cnt = contours[max_index]
+
+
 
         # # find countours
         # contours, _ = cv2.findContours(
@@ -344,29 +344,35 @@ class FingerVision(Node):
         z_list = []
         quaternion_list = []
 
-        (x, y), radius = cv2.minEnclosingCircle(cnt)
-        area = np.max(areas)
+        # After
+        if len(areas) != 0:
+            max_index = np.argmax(areas)
 
-        if self.min_area < area < self.max_area:
-            coord_list.append((x, y))
-            radius_list.append(int(radius))
-            quaternion_list.append([0.0, 0.0, 0.0, 1.0])
+            cnt = contours[max_index]
 
-        for i, coord in enumerate(coord_list):
+            (x, y), radius = cv2.minEnclosingCircle(cnt)
+            area = np.max(areas)
 
-            coord_x, coord_y = coord
-            # cv2.circle(image, (int(coord_x), int(coord_y)), radius_list[i],
-            #            (0, 255, 0), 2)
-            cv2.circle(image, (int(coord_x), int(coord_y)), 20,
-                       (0, 0, 255), -1)
+            if self.min_area < area < self.max_area:
+                coord_list.append((x, y))
+                radius_list.append(int(radius))
+                quaternion_list.append([0.0, 0.0, 0.0, 1.0])
 
-            # Get the 3D position of the centroid
-            x, y, z = self.position(
-                cv_depth_image, int(coord_x), int(coord_y), k)
+            for i, coord in enumerate(coord_list):
 
-            x_list.append(x)
-            y_list.append(y)
-            z_list.append(z)
+                coord_x, coord_y = coord
+                # cv2.circle(image, (int(coord_x), int(coord_y)), radius_list[i],
+                #            (0, 255, 0), 2)
+                cv2.circle(image, (int(coord_x), int(coord_y)), 20,
+                        (0, 0, 255), -1)
+
+                # Get the 3D position of the centroid
+                x, y, z = self.position(
+                    cv_depth_image, int(coord_x), int(coord_y), k)
+
+                x_list.append(x)
+                y_list.append(y)
+                z_list.append(z)
 
         return (
             image,

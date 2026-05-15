@@ -1,5 +1,5 @@
 /finger_planner:
   ros__parameters:
-    max_velocity: 33.0
-    max_acceleration: 33.0
+    max_velocity: 5.0
+    max_acceleration: 5.0
     relative_gnd_height: -0.25

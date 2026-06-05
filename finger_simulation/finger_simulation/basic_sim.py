@@ -132,11 +132,11 @@ class FingerSimulation():
         self.finger, = parser.AddModels(
             url='package://finger_description/urdf/finger3.urdf')
         self.plant.RenameModelInstance(
-            model_instance=self.finger, name='speedster_finger')
-        parser.AddModels(
-            url='package://finger_simulation/models/grasspatch/model.sdf')
-        parser.AddModels(
-            url='package://finger_simulation/models/Standard_Toilet/model.sdf')
+            model_instance=self.finger, name='actual_finger')
+        # parser.AddModels(
+        #     url='package://finger_simulation/models/grasspatch/model.sdf')
+        # parser.AddModels(
+        #     url='package://finger_simulation/models/Standard_Toilet/model.sdf')
         # self.box, = parser.AddModels(
         #     url='package://finger_simulation/models/box/model.sdf')
 
@@ -175,18 +175,18 @@ class FingerSimulation():
         # turn off gravity
         # self.plant.mutable_gravity_field().set_gravity_vector([0, 0, 10.0])
 
-        # set up other object locations
-        grasspatch_frame = self.plant.GetFrameByName('grasspatch_frame')
-        plant_context = self.plant.CreateDefaultContext()
-        tf_world_grasspatch = grasspatch_frame.CalcPoseInWorld(plant_context)
+        # # set up other object locations
+        # grasspatch_frame = self.plant.GetFrameByName('grasspatch_frame')
+        # plant_context = self.plant.CreateDefaultContext()
+        # tf_world_grasspatch = grasspatch_frame.CalcPoseInWorld(plant_context)
 
-        standard_toilet_body = self.plant.GetBodyByName('toilet_base_link')
-        tf_grasspatch_toilet = RigidTransform(
-            RollPitchYaw(np.asarray([45, 30, 0]) * np.pi / 180),
-            p=[1.0, 0, 0.8])
-        tf_world_toilet = tf_world_grasspatch.multiply(tf_grasspatch_toilet)
-        self.plant.SetDefaultFloatingBaseBodyPose(
-            standard_toilet_body, tf_world_toilet)
+        # standard_toilet_body = self.plant.GetBodyByName('toilet_base_link')
+        # tf_grasspatch_toilet = RigidTransform(
+        #     RollPitchYaw(np.asarray([45, 30, 0]) * np.pi / 180),
+        #     p=[1.0, 0, 0.8])
+        # tf_world_toilet = tf_world_grasspatch.multiply(tf_grasspatch_toilet)
+        # self.plant.SetDefaultFloatingBaseBodyPose(
+        #     standard_toilet_body, tf_world_toilet)
 
     def constant_torques(self):
         """Initialize joint torque inputs."""

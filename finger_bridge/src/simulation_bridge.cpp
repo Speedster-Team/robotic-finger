@@ -51,7 +51,7 @@ public:
       [this](const std::shared_ptr<finger_interfaces::srv::SendCommand::Request> request,
       std::shared_ptr<finger_interfaces::srv::SendCommand::Response> response) -> void
       {
-        RCLCPP_INFO(get_logger(), "send service request recieved...");
+        RCLCPP_DEBUG(get_logger(), "send service request recieved...");
 
         // check that length field is filled
         if (request->length == 0) {
@@ -75,7 +75,7 @@ public:
           // simulation will always recieve command
           response->success = 1;
 
-          RCLCPP_INFO_STREAM(get_logger(),
+          RCLCPP_DEBUG_STREAM(get_logger(),
           "send service request completed, response: " << int(response->success));
         }
       };
@@ -91,7 +91,7 @@ public:
       [this](const std::shared_ptr<finger_interfaces::srv::StartStopCommand::Request>,
       std::shared_ptr<finger_interfaces::srv::StartStopCommand::Response> response) -> void
       {
-        RCLCPP_INFO(get_logger(), "start service request recieved...");
+        RCLCPP_DEBUG(get_logger(), "start service request recieved...");
 
         // simulation will always recieve command
         response->success = 1;
@@ -99,7 +99,7 @@ public:
         // make state ready
         state_ = State::READY;
 
-        RCLCPP_INFO_STREAM(get_logger(),
+        RCLCPP_DEBUG_STREAM(get_logger(),
         "start service request completed, response: " << int(response->success));
       };
 
@@ -115,7 +115,7 @@ public:
       [this](const std::shared_ptr<finger_interfaces::srv::StartStopCommand::Request>,
       std::shared_ptr<finger_interfaces::srv::StartStopCommand::Response> response) -> void
       {
-        RCLCPP_INFO(get_logger(), "stop service request recieved...");
+        RCLCPP_DEBUG(get_logger(), "stop service request recieved...");
 
         // simulation will always recieve command
         response->success = 1;
@@ -123,7 +123,7 @@ public:
         // make state waiting
         state_ = State::WAITING;
 
-        RCLCPP_INFO_STREAM(get_logger(),
+        RCLCPP_DEBUG_STREAM(get_logger(),
         "stop service request completed, response: " << int(response->success));
       };
 
@@ -156,7 +156,7 @@ public:
         static auto count = 0;
 
         if (state_ == State::READY) {
-          RCLCPP_INFO_ONCE(get_logger(), "publishing commands to drake...");
+          RCLCPP_DEBUG_ONCE(get_logger(), "publishing commands to drake...");
 
           // publish commands to drake, same for actual and setpoint
           actual_feedback_.motor_positions = {commands_.at(count).at(0), commands_.at(count).at(1),
@@ -186,7 +186,7 @@ public:
         setpoint_feedback_pub_->publish(setpoint_feedback_);
         activity_feedback_pub_->publish(activity_feedback_);
       };
-    timer_ = this->create_wall_timer(1.25ms, command_sender_timer_callback);
+    timer_ = this->create_wall_timer(10ms, command_sender_timer_callback);
   }
 
 private:

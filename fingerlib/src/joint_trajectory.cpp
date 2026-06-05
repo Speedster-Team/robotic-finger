@@ -93,6 +93,7 @@ std::vector<arma::vec> JointTrajectory::generate_linear(
   std::vector<arma::vec> waypoints,
   double v_max, double a_max)
 {
+
   std::vector<arma::vec> trajectory;
 
   for(unsigned int i = 1; i < waypoints.size(); i++) {
@@ -119,7 +120,8 @@ std::vector<arma::vec> JointTrajectory::generate_linear(
 
       q_motor_list.push_back(_transforms.joint_to_motor(q_joint));
     }
-    
+    // q_motor_list.push_back(_transforms.joint_to_motor(end));
+
     trajectory.insert(trajectory.end(), q_motor_list.begin(), q_motor_list.end());
   }
 

@@ -17,7 +17,7 @@
     r3: 0.0045
     r5: -0.008
     r7: -0.0045
-    r9: -0.009
+    r9: -0.01
     r11: -0.02625  # -ra * Gear_ratio
 
     # these build the structure matrix, account for signs in this file!!!
@@ -34,12 +34,13 @@
     ]
 
     # Joint limits (rad): [splay/MCP, MCP flex, PIP/DIP flex]
-    joint_min: [-0.55, -0.0,   -0.0]
+    joint_min: [-0.55, -0.2617994,   -0.0]
     joint_max: [ 0.55,  1.572,  1.572]
 
     # Home configuration M (SE3), row-major 4x4
     M: [
       1.0, 0.0, 0.0, 0.0,
+      # 0.0, 1.0, 0.0, 0.146,
       0.0, 1.0, 0.0, 0.15,
       0.0, 0.0, 1.0, 0.0,
       0.0, 0.0, 0.0, 1.0

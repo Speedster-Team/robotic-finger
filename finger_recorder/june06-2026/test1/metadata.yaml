@@ -1,0 +1,86 @@
+rosbag2_bagfile_information:
+  version: 9
+  storage_identifier: mcap
+  duration:
+    nanoseconds: 55999668759
+  starting_time:
+    nanoseconds_since_epoch: 1780584177049052973
+  message_count: 45994
+  topics_with_message_count:
+    - topic_metadata:
+        name: drake/joint_feedback
+        type: finger_interfaces/msg/MotorFeedback
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 6039
+    - topic_metadata:
+        name: actual/joint_feedback
+        type: finger_interfaces/msg/MotorFeedback
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 5527
+    - topic_metadata:
+        name: setpoint/joint_feedback
+        type: finger_interfaces/msg/MotorFeedback
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 5527
+    - topic_metadata:
+        name: motor_pos_activity_feedback
+        type: finger_interfaces/msg/MotorActivity
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 5607
+    - topic_metadata:
+        name: joint_torque_drake_feedback
+        type: finger_interfaces/msg/MotorFeedback
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 6039
+    - topic_metadata:
+        name: motor_pos_setpoint_feedback
+        type: finger_interfaces/msg/MotorFeedback
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 5608
+    - topic_metadata:
+        name: motor_pos_drake_feedback
+        type: finger_interfaces/msg/MotorFeedback
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 6039
+    - topic_metadata:
+        name: motor_pos_actual_feedback
+        type: finger_interfaces/msg/MotorFeedback
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 5608
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - finger_bag_20260604_094256_0.mcap
+  files:
+    - path: finger_bag_20260604_094256_0.mcap
+      starting_time:
+        nanoseconds_since_epoch: 1780584177049052973
+      duration:
+        nanoseconds: 55999668759
+      message_count: 45994
+  custom_data: ~
+  ros_distro: kilted

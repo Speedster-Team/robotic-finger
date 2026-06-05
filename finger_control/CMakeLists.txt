@@ -48,15 +48,23 @@ target_link_libraries(finger_control PUBLIC
 )
 
 add_executable(demo src/demo.cpp)
-add_executable(control src/whackamole.cpp)
+add_executable(whackamole src/whackamole.cpp)
+add_executable(3d_waypoints src/3d_waypoints.cpp)
 
-target_link_libraries(control
+target_link_libraries(whackamole
   finger_control
   ${tf2_ros_TARGETS}
   ${tf2_TARGETS}
   ${geometry_msgs_TARGETS}
   ${std_msgs_TARGETS}
+)
 
+target_link_libraries(3d_waypoints
+  finger_control
+  ${tf2_ros_TARGETS}
+  ${tf2_TARGETS}
+  ${geometry_msgs_TARGETS}
+  ${std_msgs_TARGETS}
 )
 
 target_link_libraries(demo
@@ -75,7 +83,7 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(TARGETS control demo
+install(TARGETS whackamole 3d_waypoints demo
   DESTINATION lib/${PROJECT_NAME}
 )
 

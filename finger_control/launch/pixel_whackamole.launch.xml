@@ -22,7 +22,7 @@
     <remap from="/scene_markers/collision" to="/actual/scene_markers/collision"/>
   </node>
 
-  <node pkg="finger_simulation" exec="4barsim" namespace="drake" output="screen">
+  <node pkg="finger_simulation" exec="4barsim" namespace="drake">
     <remap from="/scene_markers/visual" to="/drake/scene_markers/visual"/>
     <remap from="/scene_markers/collision" to="/drake/scene_markers/collision"/>
   </node>
@@ -33,7 +33,7 @@
     <remap from="/scene_markers/collision" to="/setpoint/scene_markers/collision"/>
   </node>
 
-  <node pkg="finger_bridge" exec="simulation_bridge" output="screen" if="$(eval '\'$(var bridge)\'==\'simulation\'')"/>
+  <node pkg="finger_bridge" exec="simulation_bridge" output="screen"/>
   <node pkg="finger_bridge" exec="hardware_bridge" output="screen" if="$(eval '\'$(var bridge)\'==\'hardware\'')"/>
 
   <node pkg="finger_planner" exec="finger_planner" output="screen">
@@ -41,20 +41,29 @@
     <param from="$(find-pkg-share finger_planner)/config/movement_config.yaml"/>
   </node>
 
-  <node pkg="finger_control" exec="control" output="screen">
+  <node pkg="finger_control" exec="whackamole" output="screen">
       <param from="$(find-pkg-share finger_description)/config/finger.yaml"/>
       <param from="$(find-pkg-share finger_planner)/config/movement_config.yaml"/>
-  </node>
+      <param name="bridge" value="$(var bridge)"/>
+      <param from="$(find-pkg-share finger_vision2)/config/phone_tf.yaml"/>
+</node>
 
   <node pkg="finger_recorder" exec="record" if="$(eval '\'$(var record)\'==\'true\'')" output="screen"/>
-
-  <node pkg="tf2_ros" exec="static_transform_publisher"
-       args="--x 0 --y 0 --z 0.2 --qx 0 --qy 0 --qz 0 --qw 1 --frame-id world --child-frame-id base_frame" />
 
   <node pkg="finger_vision2" exec="pixel_vision" output="screen">
       <param from="$(find-pkg-share finger_vision2)/config/phone_tf.yaml"/>
   </node>
 
   <include file="$(find-pkg-share whackamole_server)/launch/whackmole.launch.xml"/>
+
+  <node pkg="tf2_ros" exec="static_transform_publisher"
+    args="--x 0 --y 0 --z 0.2 --qx 0 --qy 0 --qz 0 --qw 1 --frame-id world --child-frame-id base_frame" />  
+  <node pkg="tf2_ros" exec="static_transform_publisher"
+    args="--x -0.004 --y 0.03 --z 0.0 --qx 0 --qy 0 --qz 0 --qw 1 --frame-id speedster_finger/distal_phalanx --child-frame-id drake_fingertip" />
+  <node pkg="tf2_ros" exec="static_transform_publisher"
+    args="--x -0.004 --y 0.03 --z 0.0 --qx 0 --qy 0 --qz 0 --qw 1 --frame-id actual_finger/distal_phalanx --child-frame-id actual_fingertip" if="$(eval '\'$(var bridge)\'==\'hardware\'')" />
+  <node pkg="tf2_ros" exec="static_transform_publisher"
+    args="--x -0.004 --y 0.03 --z 0.0 --qx 0 --qy 0 --qz 0 --qw 1 --frame-id setpoint_finger/distal_phalanx --child-frame-id setpoint_fingertip" />
+
 
 </launch>

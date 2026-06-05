@@ -3,17 +3,17 @@
     # Sinusoidal demo parameters
     sinusoidal:
       repeat: 1
-      joint: 0
-      amp: 0.2
+      joint: 1
+      amp: 0.1
       freq: 1.0
-      v_offset: 0.0
+      v_offset: 0.7
 
     # Chirp demo parameters
     chirp:
       joint: 1
       amp: 0.1
       freq_init: 0.1
-      freq_final: 30.0
+      freq_final: 15.0
       time: 8.0
       v_offset: 0.5   # pi/4 rad
 
@@ -29,14 +29,15 @@
     linear:
       repeat: 1
       waypoints: [0.0, 0.0, 0.0,
-                  0.0, 0.1, 0.1]
+                  0.0, 0.1, 0.1,
+                  0.0, 0.0, 0.0]
 
     linear_step:
       repeat: 1
       freq: 1.0
       waypoints: [
         0.0, 0.0, 0.0,
-        0.0, 1.57, 1.3]
+        0.0, 0.314, 0.0]
 
 
     # Force step demo parameters
@@ -44,11 +45,12 @@
       repeat: 1
       freq: .5
       q_state: [0.0, 0.0, 0.0]
-      low: [0.0, 0.0, -20.0]
-      high: [0.0, 0.0, -20.0]
+      low: [0.0, 0.0, 1.0]
+      high: [0.0, 0.0, 20.0]
 
     # IK demo parameters
     ik:
       repeat: 1
       waypoints: [0.05, 0.08, -0.1,
-                 -0.05, 0.08, -0.1]
+                 -0.05, 0.08, -0.1,
+                  0.05, 0.08, -0.1]

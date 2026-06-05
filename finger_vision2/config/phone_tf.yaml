@@ -2,11 +2,14 @@
   ros__parameters:
     tf:
       trans:
-        x: -0.065
-        y: 0.013
-        z: -0.093
+        x: 0.0
+        y: 0.10
+        z: -0.08
       rot:
-        roll: 0.0
+        # roll: -0.610865  
+        roll: -0.7853982 # 50deg 
         pitch: 3.14
-        yaw: -1.57
+        yaw: 0.0
     px_per_meter: 6036.74540683
+    fingertip_radius: 0.005
+    x_offset: 0.002

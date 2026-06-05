@@ -3,7 +3,7 @@
 
 SerialInterface::SerialInterface()
 : _port ("/dev/ttyACM0"),
-  _baud (115200),
+  _baud (460800),
   _msg_status (MessageStatus::NO_STATUS),
   _fdbk_status (FeedbackStatus::NOTHING_NEW),
   _serial (std::make_shared<serial::Serial>(_port, _baud, serial::Timeout::simpleTimeout(1)))

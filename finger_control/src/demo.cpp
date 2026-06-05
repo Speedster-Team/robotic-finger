@@ -91,6 +91,19 @@ public:
       RCLCPP_INFO(get_logger(), "Running sinusoidal movement demo..."); // go to start
 
       send_sinusoid_goal(sinusoidal_repeat_, sinusoidal_joint_, sinusoidal_amp_, sinusoidal_freq_, sinusoidal_v_offset_);
+
+      // send_linear_goal(0, {{0.0, 0.0, 0.7}});
+      // rclcpp::sleep_for(50ms);
+      // send_sinusoid_goal(1, 2, 0.35, 1.0, 0.7);
+      // rclcpp::sleep_for(50ms);
+
+      // send_linear_goal(0, {{0.0, 0.7, 0.0}});
+      // rclcpp::sleep_for(50ms);
+      // send_sinusoid_goal(1, 1, 0.35, 1.0, 0.7);
+      // rclcpp::sleep_for(50ms);
+      // send_linear_goal(0, {{0.0, 0.0, 0.0}});
+      // rclcpp::sleep_for(50ms);
+      // send_sinusoid_goal(1, 0, 0.25, 1.0, 0.0);
     }
 
     else if (demo_ == "force_step") {
@@ -106,10 +119,15 @@ public:
       RCLCPP_INFO(get_logger(), "Running inverse kinematics demo...");
 
       // move to start
-      send_cartesian_goal(0, {ik_waypoints_.at(0)});
+      // send_cartesian_goal(0, {ik_waypoints_.at(0)});
 
-      send_cartesian_goal(ik_repeat_, ik_waypoints_);
-    }
+      for (auto i = 0; i < 20; i++) {
+        send_cartesian_goal(0, {ik_waypoints_.at(0)});
+        rclcpp::sleep_for(250ms);
+        send_cartesian_goal(0, {ik_waypoints_.at(1)});
+        rclcpp::sleep_for(250ms);
+        }
+      }
 
     else if (demo_ == "cartesian_ik") {
       RCLCPP_INFO(get_logger(), "Running cartesian ik demo...");
@@ -122,7 +140,7 @@ public:
                 auto start = waypoints.at(i-1);
                 auto end = waypoints.at(i);
                 for (int j = 0; j <= n; j++) {
-                  float t = static_cast<float>(i) / n;
+                  float t = static_cast<float>(j) / n;
                   points.push_back({
                       start[0] + t * (end[0] - start[0]),
                       start[1] + t * (end[1] - start[1]),
@@ -133,7 +151,7 @@ public:
         return points;
       };
 
-      send_cartesian_goal(ik_repeat_, lerp_waypoints(ik_waypoints_));
+      send_cartesian_goal(1, lerp_waypoints(ik_waypoints_));
     }
 
     else if (demo_ == "chirp") {

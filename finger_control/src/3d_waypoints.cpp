@@ -50,16 +50,17 @@ enum FingerState
 };
 
 /// \brief A class that bridges commands and feedback between ros and drake
-class FingerWhackamole : public FingerControlBase
+class ThreeDWaypoints : public FingerControlBase
 {
 public:
 
   /// \brief Create an instance of FingerWhackamole running the whackamole demo
-  FingerWhackamole()
-  : FingerControlBase("finger_whackamole"),
+  ThreeDWaypoints()
+  : FingerControlBase("3d_waypoints"),
     finger_state_ (FingerState::IDLE),
-    hit_count_ (0)
+    goal_count_ (0)
   {
+
     auto param_desc = rcl_interfaces::msg::ParameterDescriptor{};
     param_desc.description = "The fingertip that should be looked for.";
     declare_parameter("bridge", "simulation", param_desc);
@@ -79,15 +80,18 @@ public:
     goal_tf_.transform.translation.x = 0.0;
     goal_tf_.transform.translation.y = 0.0;
     goal_tf_.transform.translation.z = 0.0;
-    new_goal_tf_.transform.translation.x = 0.0;
-    new_goal_tf_.transform.translation.y = 0.0;
-    new_goal_tf_.transform.translation.z = 0.0;
+    fingertip_tf_.transform.translation.x = 0.0;
+    fingertip_tf_.transform.translation.y = 0.0;
+    fingertip_tf_.transform.translation.z = 0.0;
 
     // init frame names
     base_frame_ = "base_frame";
     goal_frame_ = "goal";
-
-    send_linear_goal(0, {{0.0, 0.0, 1.0}});
+    if (bridge == "hardware") {
+      fingertip_frame_ = "actual_fingertip";
+    } else {
+      fingertip_frame_ = "drake_fingertip";
+    }
 
     // define timer callback and init
     auto hyper_alg_timer_cb =
@@ -118,21 +122,14 @@ public:
           case FingerState::START_MOVE: {
             // convert to vector
             std::vector<float> above_goal = {float(goal_tf_.transform.translation.x),
-                                             float(goal_tf_.transform.translation.y - 0.015f),
-                                             float(goal_tf_.transform.translation.z + 0.015f)};
+                                               float(goal_tf_.transform.translation.y - 0.02f),
+                                               float(goal_tf_.transform.translation.z + 0.01f)};
             std::vector<float> goal = {float(goal_tf_.transform.translation.x),
                                        float(goal_tf_.transform.translation.y),
                                        float(goal_tf_.transform.translation.z)};
 
             // just the goal
-            // send_cartesian_goal(0, {goal});
-            // send_linear_goal(0, {{0,0,0},{0.0, 0.025, 1.25}});
-            send_cartesian_goal(0, {above_goal});
-            send_cartesian_goal(0, {above_goal, goal});
-            // rclcpp::sleep_for(50ms);
-            // send_cartesian_goal(0, {goal, above_goal});
-
-            // send_linear_goal(0, {{0.0, 0.0, 0.0}});
+            send_cartesian_goal(false, {goal});
 
             // update prev_tf
             prev_tf_ = goal_tf_;
@@ -145,35 +142,21 @@ public:
           case FingerState::MOVING: {
             // listen if finger has reached goal position
             try {
-              new_goal_tf_ = tf_buffer_->lookupTransform(
-                base_frame_, goal_frame_,
+              fingertip_tf_ = tf_buffer_->lookupTransform(
+                base_frame_, fingertip_frame_,
                 tf2::TimePointZero);
               
-              // check if goal state has moved
-              if ((!similar_tfs(new_goal_tf_, goal_tf_))) {
+              if (!similar_tfs(fingertip_tf_, goal_tf_)) {
                 std_msgs::msg::Empty msg;
                 completed_pub_->publish(msg);
 
                 // if successful switch state and wait for next goal
                 finger_state_ = FingerState::IDLE;
-              } 
-              // else if (hit_count_ == 0) {
-              //   // wait 10ms and check again to see if finger hit the goal (don't change state)
-              //   // rclcpp::sleep_for(50ms);
-
-              //   // increment hit count
-              //   hit_count_++;
-              // } else {
-              //   // if already hit once and the goal hasn't changed, try again
-              //   finger_state_ = FingerState::START_MOVE;
-
-              //   // set hit count to 0 so we check again after a delay if the point has changed
-              //   hit_count_ = 0;
-              // }
+              }
 
             } catch (const tf2::TransformException & ex) {
               RCLCPP_INFO(get_logger(), "Could not transform %s to %s: %s",
-                base_frame_.c_str(), goal_frame_.c_str(), ex.what());
+                fingertip_frame_.c_str(), goal_frame_.c_str(), ex.what());
               return;
             }
             break;
@@ -182,20 +165,21 @@ public:
       };
       
     timer_cb_group_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-    timer_ = create_wall_timer(10ms, hyper_alg_timer_cb, timer_cb_group_);
+    timer_ = create_wall_timer(100ms, hyper_alg_timer_cb, timer_cb_group_);
 
   
   }
 
 private:
   FingerState finger_state_;
-  int hit_count_;
+  int goal_count_;
 
   std::string base_frame_;
   std::string goal_frame_;
+  std::string fingertip_frame_;
   geometry_msgs::msg::TransformStamped goal_tf_;
   geometry_msgs::msg::TransformStamped prev_tf_;
-  geometry_msgs::msg::TransformStamped new_goal_tf_;
+  geometry_msgs::msg::TransformStamped fingertip_tf_;
 
   rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr completed_pub_;
   std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
@@ -221,7 +205,7 @@ private:
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<FingerWhackamole>();
+  auto node = std::make_shared<ThreeDWaypoints>();
   rclcpp::executors::MultiThreadedExecutor exec;
   exec.add_node(node);
   exec.spin();

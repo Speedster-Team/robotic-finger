@@ -1,0 +1,40 @@
+test0:
+    force:
+      repeat: 1
+      freq: .5
+      q_state: [0.0, 0.0, 0.0]
+      low: [0.0, 0.0, 1.0]
+      high: [0.0, 0.0, 3.0]
+
+test1:
+    force:
+      repeat: 1
+      freq: .5
+      q_state: [0.0, 0.0, 0.0]
+      low: [0.0, 0.0, 1.0]
+      high: [0.0, 0.0, 10.0]
+
+test2:
+    force:
+      repeat: 1
+      freq: .5
+      q_state: [0.0, 0.0, 0.0]
+      low: [0.0, 0.0, 1.0]
+      high: [0.0, 0.0, 15.0]
+
+test3:
+    force:
+      repeat: 1
+      freq: .5
+      q_state: [0.0, 0.0, 0.0]
+      low: [0.0, 0.0, 1.0]
+      high: [0.0, 0.0, 20.0]
+
+test 4:
+    sinusoidal:
+      repeat: 1
+      joint: 1
+      amp: 0.471
+      freq: 10.0
+      v_offset: 0.7
+

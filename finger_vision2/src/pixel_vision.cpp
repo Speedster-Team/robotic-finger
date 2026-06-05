@@ -69,6 +69,7 @@ public:
     target_state_ (TargetState::NONE)
   {
     // declare and get parameters
+    declare_parameter("x_offset", 0.006);
     declare_parameter("tf.trans.x", 0.0);
     declare_parameter("tf.trans.y", 0.0);
     declare_parameter("tf.trans.z", 0.0);
@@ -76,6 +77,7 @@ public:
     declare_parameter("tf.rot.pitch", 0.0);
     declare_parameter("tf.rot.yaw", 0.0);
     declare_parameter("px_per_meter", 0.0);
+    declare_parameter("fingertip_radius", 0.0);
 
     phone_tf_.header.stamp = now();
     phone_tf_.header.frame_id = "base_frame";
@@ -91,9 +93,22 @@ public:
     phone_tf_.transform.rotation.w = q.w();
     pixels_per_meter_ = get_parameter("px_per_meter").as_double();
 
+    // screen_width=402 screen_length=714
+    phone_corner_tf_.header.stamp = now();
+    phone_corner_tf_.header.frame_id = "phone_frame";
+    phone_corner_tf_.child_frame_id = "phone_corner";
+    phone_corner_tf_.transform.translation.x = (402.0 / 2.0) / pixels_per_meter_;
+    phone_corner_tf_.transform.translation.y = ((714.0 / 2.0) / pixels_per_meter_) +  get_parameter("x_offset").as_double();
+    phone_corner_tf_.transform.translation.z = -get_parameter("fingertip_radius").as_double();
+    q.setRPY(0.0, 0.0, 3.14);
+    phone_corner_tf_.transform.rotation.x = q.x();
+    phone_corner_tf_.transform.rotation.y = q.y();
+    phone_corner_tf_.transform.rotation.z = q.z();
+    phone_corner_tf_.transform.rotation.w = q.w();
     // create static transformer for phone transform and publish
     tf_static_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
     tf_static_broadcaster_->sendTransform(phone_tf_);
+    tf_static_broadcaster_->sendTransform(phone_corner_tf_);
 
     // create publishers
     auto qos = rclcpp::QoS(10).transient_local();
@@ -146,7 +161,7 @@ public:
     }
       };
 
-    timer_ = create_wall_timer(100ms, timer_callback);
+    timer_ = create_wall_timer(1ms, timer_callback);
 
     RCLCPP_INFO(get_logger(), "simulation_vision node started");
   }
@@ -158,14 +173,14 @@ private:
     auto x = target_.x / pixels_per_meter_;
     auto y = target_.y / pixels_per_meter_;
     auto size = target_.size / pixels_per_meter_;
-    goal_tf_.header.frame_id = "phone_frame";
+    goal_tf_.header.frame_id = "phone_corner";
     goal_tf_.child_frame_id = "goal";
     goal_tf_.transform.translation.x = x;
     goal_tf_.transform.translation.y = y;
     goal_tf_.transform.translation.z = 0.0f;
     goal_tf_.transform.rotation.w = 1.0;
 
-    marker_.header.frame_id = "phone_frame";
+    marker_.header.frame_id = "phone_corner";
     marker_.id = 0;
     marker_.type = visualization_msgs::msg::Marker::SPHERE;
     marker_.action = visualization_msgs::msg::Marker::ADD;
@@ -197,6 +212,7 @@ private:
   int count_;
   int max_count_;
   geometry_msgs::msg::TransformStamped phone_tf_;
+  geometry_msgs::msg::TransformStamped phone_corner_tf_;
   double pixels_per_meter_;
 
 

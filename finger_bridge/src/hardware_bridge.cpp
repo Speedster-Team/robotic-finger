@@ -56,7 +56,7 @@ public:
       [this](const std::shared_ptr<finger_interfaces::srv::SendCommand::Request> request,
       std::shared_ptr<finger_interfaces::srv::SendCommand::Response> response) -> void
       {
-        RCLCPP_INFO(get_logger(), "send service request recieved...");
+        RCLCPP_DEBUG(get_logger(), "send service request recieved...");
 
         // check that length field is filled
         if (request->length == 0) {
@@ -91,7 +91,7 @@ public:
             response->success = 0;
           }
 
-          RCLCPP_INFO_STREAM(get_logger(),
+          RCLCPP_DEBUG_STREAM(get_logger(),
           "send service request completed, response: " << int(response->success));
         }
       };
@@ -108,7 +108,7 @@ public:
       [this](const std::shared_ptr<finger_interfaces::srv::StartStopCommand::Request>,
       std::shared_ptr<finger_interfaces::srv::StartStopCommand::Response> response) -> void
       {
-        RCLCPP_INFO(get_logger(), "start service request recieved...");
+        RCLCPP_DEBUG(get_logger(), "start service request recieved...");
 
         // send serial command
         serial_interface_->send_start();
@@ -129,7 +129,7 @@ public:
           response->success = 0;
         }
 
-        RCLCPP_INFO_STREAM(get_logger(),
+        RCLCPP_DEBUG_STREAM(get_logger(),
         "start service request completed, response: " << int(response->success));
       };
 
@@ -145,7 +145,7 @@ public:
       [this](const std::shared_ptr<finger_interfaces::srv::StartStopCommand::Request>,
       std::shared_ptr<finger_interfaces::srv::StartStopCommand::Response> response) -> void
       {
-        RCLCPP_INFO(get_logger(), "stop service request recieved...");
+        RCLCPP_DEBUG(get_logger(), "stop service request recieved...");
 
         // send serial command
         serial_interface_->send_stop();
@@ -166,7 +166,7 @@ public:
           response->success = 0;
         }
 
-        RCLCPP_INFO_STREAM(get_logger(),
+        RCLCPP_DEBUG_STREAM(get_logger(),
         "stop service request completed, response: " << int(response->success));
       };
 
@@ -206,7 +206,7 @@ public:
         }
 
       };
-    feedback_timer_ = this->create_wall_timer(1ms, feedback_timer_callback);
+    feedback_timer_ = this->create_wall_timer(500us, feedback_timer_callback);
   }
 
 private:

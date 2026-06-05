@@ -136,7 +136,6 @@ public:
     }
     RCLCPP_INFO(get_logger(), "Motor feedback received, proceeding.");
   
-    rclcpp::sleep_for(3000ms);
   }
 
 protected:
@@ -215,8 +214,8 @@ protected:
 
     // add a small buffer so that planning doesn't fail when the finger is at a joint limit
     for (int i = 0; i < int(joint_max_.size()); i++) {
-      joint_min_(i) -= 0.01;
-      joint_max_(i) += 0.01;
+      joint_min_(i) -= 0.05;
+      joint_max_(i) += 0.05;
     }
 
     auto M_flat = get_parameter("M").as_double_array();

@@ -24,7 +24,7 @@ class FingerPulleySystem(LeafSystem):
         r3 = 4.5 * 0.001
         r5 = 8 * 0.001
         r7 = 4.5 * 0.001
-        r9 = 9 * 0.001
+        r9 = 10 * 0.001
 
         self.St = np.array([[-r11, r3, -r1],  # splay joint
                             [0,    -r7,  -r5],  # mcp joint

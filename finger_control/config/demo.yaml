@@ -3,9 +3,9 @@
     # Sinusoidal demo parameters
     sinusoidal:
       repeat: 1
-      joint: 1
+      joint: `
       amp: 0.1
-      freq: 1.0
+      freq: 10.0
       v_offset: 0.7
 
     # Chirp demo parameters
@@ -34,10 +34,10 @@
 
     linear_step:
       repeat: 1
-      freq: 1.0
+      freq: 4.0
       waypoints: [
         0.0, 0.0, 0.0,
-        0.0, 0.314, 0.0]
+        0.0, 1.3, 1.3]
 
 
     # Force step demo parameters

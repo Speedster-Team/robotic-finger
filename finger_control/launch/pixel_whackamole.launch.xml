@@ -22,10 +22,10 @@
     <remap from="/scene_markers/collision" to="/actual/scene_markers/collision"/>
   </node>
 
-  <node pkg="finger_simulation" exec="4barsim" namespace="drake">
+  <!-- <node pkg="finger_simulation" exec="4barsim" namespace="drake">
     <remap from="/scene_markers/visual" to="/drake/scene_markers/visual"/>
     <remap from="/scene_markers/collision" to="/drake/scene_markers/collision"/>
-  </node>
+  </node> -->
 
   <node pkg="finger_simulation" exec="basic_setpoint" namespace="setpoint">
     <remap from="motor_pos_actual_feedback" to="motor_pos_setpoint_feedback"/>

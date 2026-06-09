@@ -182,7 +182,7 @@ public:
       };
       
     timer_cb_group_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-    timer_ = create_wall_timer(10ms, hyper_alg_timer_cb, timer_cb_group_);
+    timer_ = create_wall_timer(5ms, hyper_alg_timer_cb, timer_cb_group_);
 
   
   }

@@ -11,4 +11,4 @@
         yaw: 0.0
     px_per_meter: 6036.74540683
     fingertip_radius: 0.005
-    x_offset: -0.01
+    x_offset: -0.0

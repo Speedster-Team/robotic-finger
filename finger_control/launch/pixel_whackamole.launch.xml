@@ -22,10 +22,10 @@
     <remap from="/scene_markers/collision" to="/actual/scene_markers/collision"/>
   </node>
 
-  <!-- <node pkg="finger_simulation" exec="4barsim" namespace="drake">
+  <node pkg="finger_simulation" exec="4barsim" namespace="drake">
     <remap from="/scene_markers/visual" to="/drake/scene_markers/visual"/>
     <remap from="/scene_markers/collision" to="/drake/scene_markers/collision"/>
-  </node> -->
+  </node>
 
   <node pkg="finger_simulation" exec="basic_setpoint" namespace="setpoint">
     <remap from="motor_pos_actual_feedback" to="motor_pos_setpoint_feedback"/>
@@ -54,7 +54,10 @@
       <param from="$(find-pkg-share finger_vision2)/config/phone_tf.yaml"/>
   </node>
 
-  <include file="$(find-pkg-share whackamole_server)/launch/whackmole.launch.xml"/>
+  <include file="$(find-pkg-share whackamole_server)/launch/whackmole.launch.xml">
+    <arg name="port" value="3000"/>
+    <arg name="webapp_port" value="8000"/>
+  </include>
 
   <node pkg="tf2_ros" exec="static_transform_publisher"
     args="--x 0 --y 0 --z 0.2 --qx 0 --qy 0 --qz 0 --qw 1 --frame-id world --child-frame-id base_frame" />  

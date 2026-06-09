@@ -240,7 +240,7 @@ public:
         msg_attempts_ = 0;
 
         // start timer for action
-        action_timer_ = create_wall_timer(5ms, [this, goal_handle](){
+        action_timer_ = create_wall_timer(2ms, [this, goal_handle](){
               return this->execute_cartesian_goal(goal_handle);
             },
         timer_cb_group_);
@@ -297,7 +297,7 @@ public:
         msg_attempts_ = 0;
 
         // start timer for action
-        action_timer_ = create_wall_timer(5ms, [this, goal_handle](){
+        action_timer_ = create_wall_timer(2ms, [this, goal_handle](){
               return this->execute_sinusoidal_goal(goal_handle);
             },
         timer_cb_group_);
@@ -380,7 +380,7 @@ public:
         msg_attempts_ = 0;
 
         // start timer for action
-        action_timer_ = create_wall_timer(5ms, [this, goal_handle](){
+        action_timer_ = create_wall_timer(2ms, [this, goal_handle](){
               return this->execute_linear_goal(goal_handle);
           },
       timer_cb_group_);
@@ -463,7 +463,7 @@ public:
         msg_attempts_ = 0;
 
         // start timer for action
-        action_timer_ = create_wall_timer(5ms, [this, goal_handle](){
+        action_timer_ = create_wall_timer(2ms, [this, goal_handle](){
               return this->execute_linear_step_goal(goal_handle);
           },
       timer_cb_group_);
@@ -516,7 +516,7 @@ public:
         msg_attempts_ = 0;
 
         // start timer for action
-        action_timer_ = create_wall_timer(5ms, [this, goal_handle](){
+        action_timer_ = create_wall_timer(2ms, [this, goal_handle](){
               return this->execute_force_step_goal(goal_handle);
           },
         timer_cb_group_);
@@ -573,7 +573,7 @@ public:
         msg_attempts_ = 0;
 
         // start timer for action
-        action_timer_ = create_wall_timer(5ms, [this, goal_handle](){
+        action_timer_ = create_wall_timer(2ms, [this, goal_handle](){
               return this->execute_chirp_goal(goal_handle);
           },
         timer_cb_group_);
@@ -630,7 +630,7 @@ public:
         msg_attempts_ = 0;
 
         // start timer for action
-        action_timer_ = create_wall_timer(5ms, [this, goal_handle](){
+        action_timer_ = create_wall_timer(2ms, [this, goal_handle](){
               return this->execute_chirp_velocity_goal(goal_handle);
           },
         timer_cb_group_);

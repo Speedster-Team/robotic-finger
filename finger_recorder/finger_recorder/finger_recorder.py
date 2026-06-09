@@ -1,5 +1,5 @@
 """
-Records finger motor and joint data from ROS2 topics to a timestamped MCAP bag file.
+Records finger motor and joint data from ROS2 topics to a MCAP bag file.
 
 SUBSCRIBERS:
   + /motor_pos_actual_feedback (finger_interfaces/msg/MotorFeedback)
@@ -138,6 +138,7 @@ finger_bag_{datetime.now().strftime("%Y%m%d_%H%M%S")}',
         self.writer.write('setpoint/joint_feedback',
                           serialize_message(msg),
                           self.get_clock().now().nanoseconds)
+
 
 def main(args=None):
     """Start the node."""

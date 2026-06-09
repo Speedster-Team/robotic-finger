@@ -1,15 +1,8 @@
-import numpy as np
-
-import trimesh
-
-from scipy.spatial import ConvexHull
-
-import modern_robotics as mr
-
 from itertools import product
-
 import time
 
+import modern_robotics as mr
+import numpy as np
 import open3d as o3d
 
 
@@ -32,9 +25,11 @@ def get_dip_angle(pip_angle):
         result = result * pip_angle_deg + coeff
     return np.deg2rad(result)
 
+
 def screw_axis(w, q):
     v = -np.cross(w, q)
     return np.concatenate([w, v])
+
 
 # define home configuration
 M = np.array([[1, 0, 0, 0],
@@ -90,14 +85,14 @@ for count, (splay, mcp, pip) in enumerate(product(splay_rom, mcp_rom, pip_rom)):
         elapsed = time.time() - start
         percent_done = count / total
         time_remaining = (elapsed / percent_done) - elapsed
-        print(f"{percent_done * 100:.2f}% done, {time_remaining:.1f}s remaining")
+        print(f'{percent_done * 100:.2f}% done, {time_remaining:.1f}s remaining')
 
 points = np.array(points)
-print(f"Shape: {points.shape}")
-print(f"Min:   {points.min(axis=0)}")
-print(f"Max:   {points.max(axis=0)}")
-print(f"Std:   {points.std(axis=0)}")
-print(f"Sample points:\n{points[:5]}")
+print(f'Shape: {points.shape}')
+print(f'Min:   {points.min(axis=0)}')
+print(f'Max:   {points.max(axis=0)}')
+print(f'Std:   {points.std(axis=0)}')
+print(f'Sample points:\n{points[:5]}')
 
 # alpha=0 is convex hull, higher alpha = tighter fit
 points_mm = points * 1000.0
@@ -124,7 +119,8 @@ mesh.remove_non_manifold_edges()
 mesh.compute_vertex_normals()
 mesh.orient_triangles()
 
-o3d.io.write_triangle_mesh("/home/michael-jenz/rds_ws/src/robotic-finger/finger_description/src/workspace.stl", mesh)
+output_path = 'src/robotic-finger/finger_description/src/workspace.stl'
+o3d.io.write_triangle_mesh(output_path, mesh)
 # # Build trimesh mesh from hull (will fill in voids)
 # mesh = trimesh.Trimesh(vertices=hull.points, faces=hull.simplices)
 # trimesh.repair.fix_normals(mesh)

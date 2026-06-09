@@ -2,11 +2,7 @@
 
 from finger_interfaces.msg import MotorFeedback
 
-import numpy as np
-
 from pydrake.systems.framework import LeafSystem
-
-import rclpy
 
 
 class Drake2Ros(LeafSystem):

@@ -71,39 +71,45 @@ public:
     linear_step_client_ = rclcpp_action::create_client<LinearStep>(this, "/linear_step_move");
     force_step_client_ = rclcpp_action::create_client<Force>(this, "/force_step_move");
     chirp_client_ = rclcpp_action::create_client<Chirp>(this, "/chirp_move");
-    chirp_velocity_client_ = rclcpp_action::create_client<ChirpVelocity>(this, "/chirp_velocity_move");
+    chirp_velocity_client_ = rclcpp_action::create_client<ChirpVelocity>(this,
+      "/chirp_velocity_move");
 
     while (!cartesian_client_->wait_for_action_server(1s)) {
       if (!rclcpp::ok()) {
-        RCLCPP_ERROR(get_logger(), "client interrupted while waiting for cartesian_move action to appear.");
+        RCLCPP_ERROR(get_logger(),
+          "client interrupted while waiting for cartesian_move action to appear.");
         rclcpp::shutdown();
       }
       RCLCPP_INFO(get_logger(), "waiting for cartesian_move action to appear...");
     }
     while (!sinusoidal_client_->wait_for_action_server(1s)) {
       if (!rclcpp::ok()) {
-        RCLCPP_ERROR(get_logger(), "client interrupted while waiting for sinusoidal_move action to appear.");
+        RCLCPP_ERROR(get_logger(),
+          "client interrupted while waiting for sinusoidal_move action to appear.");
         rclcpp::shutdown();
       }
       RCLCPP_INFO(get_logger(), "waiting for sinusoidal_move action to appear...");
     }
     while (!linear_client_->wait_for_action_server(1s)) {
       if (!rclcpp::ok()) {
-        RCLCPP_ERROR(get_logger(), "client interrupted while waiting for linear_move action to appear.");
+        RCLCPP_ERROR(get_logger(),
+          "client interrupted while waiting for linear_move action to appear.");
         rclcpp::shutdown();
       }
       RCLCPP_INFO(get_logger(), "waiting for linear_move action to appear...");
     }
     while (!linear_step_client_->wait_for_action_server(1s)) {
       if (!rclcpp::ok()) {
-        RCLCPP_ERROR(get_logger(), "client interrupted while waiting for linear_step_move action to appear.");
+        RCLCPP_ERROR(get_logger(),
+          "client interrupted while waiting for linear_step_move action to appear.");
         rclcpp::shutdown();
       }
       RCLCPP_INFO(get_logger(), "waiting for linear_move action to appear...");
     }
     while (!force_step_client_->wait_for_action_server(1s)) {
       if (!rclcpp::ok()) {
-        RCLCPP_ERROR(get_logger(), "client interrupted while waiting for force_step action to appear.");
+        RCLCPP_ERROR(get_logger(),
+          "client interrupted while waiting for force_step action to appear.");
         rclcpp::shutdown();
       }
       RCLCPP_INFO(get_logger(), "waiting for force_step action to appear...");
@@ -117,7 +123,8 @@ public:
     }
     while (!chirp_velocity_client_->wait_for_action_server(1s)) {
       if (!rclcpp::ok()) {
-        RCLCPP_ERROR(get_logger(), "client interrupted while waiting for chirp velocity action to appear.");
+        RCLCPP_ERROR(get_logger(),
+          "client interrupted while waiting for chirp velocity action to appear.");
         rclcpp::shutdown();
       }
       RCLCPP_INFO(get_logger(), "waiting for chirp_velocity action to appear...");
@@ -135,7 +142,7 @@ public:
       rclcpp::sleep_for(100ms);
     }
     RCLCPP_INFO(get_logger(), "Motor feedback received, proceeding.");
-  
+
   }
 
 protected:
@@ -173,19 +180,19 @@ protected:
     declare_parameter("r9", 0.0);
     declare_parameter("r11", 0.0);
     declare_parameter("slist", std::vector<double>{
-        0, 0, 1, 0, 0, 0,
-        -1, 0, 0, 0, 0, 0.0178,
-        -1, 0, 0, 0, 0, 0.079,
-        -1, 0, 0, 0, 0, 0.1195});
+      0, 0, 1, 0, 0, 0,
+      -1, 0, 0, 0, 0, 0.0178,
+      -1, 0, 0, 0, 0, 0.079,
+      -1, 0, 0, 0, 0, 0.1195});
     declare_parameter("joint_min", std::vector<double>{-0.55, -0.2, -0.01});
     declare_parameter("joint_max", std::vector<double>{0.55, 1.572, 1.572});
     declare_parameter("M", std::vector<double>{
-        1, 0, 0, 0,
-        0, 1, 0, 0.15,
-        0, 0, 1, 0,
-        0, 0, 0, 1});
+      1, 0, 0, 0,
+      0, 1, 0, 0.15,
+      0, 0, 1, 0,
+      0, 0, 0, 1});
     declare_parameter("four_bar_lengths", std::vector<double>{
-        8.83765e-3, 40.6e-3, 8.91536e-3, 37.79903e-3});
+      8.83765e-3, 40.6e-3, 8.91536e-3, 37.79903e-3});
 
     ra_ = get_parameter("ra").as_double();
     rb_ = get_parameter("rb").as_double();
@@ -201,10 +208,10 @@ protected:
 
     auto slist_flat = get_parameter("slist").as_double_array();
     slist_ = {
-        arma::vec6(slist_flat.data()),
-        arma::vec6(slist_flat.data() + 6),
-        arma::vec6(slist_flat.data() + 12),
-        arma::vec6(slist_flat.data() + 18)};
+      arma::vec6(slist_flat.data()),
+      arma::vec6(slist_flat.data() + 6),
+      arma::vec6(slist_flat.data() + 12),
+      arma::vec6(slist_flat.data() + 18)};
 
     auto jmin_flat = get_parameter("joint_min").as_double_array();
     joint_min_ = arma::vec(jmin_flat);
@@ -228,7 +235,7 @@ protected:
   void send_cartesian_goal(bool repeat, std::vector<std::vector<float>> waypoints)
   {
     auto goal_msg = Cartesian::Goal();
-    
+
     goal_msg.length = int(waypoints.size());
     goal_msg.repeat = int(repeat);
 
@@ -239,8 +246,7 @@ protected:
         goal_msg.y.push_back(wp.at(1));
         goal_msg.z.push_back(wp.at(2));
       }
-    }
-    else {
+    } else {
       // derive current position in cartesian coordinates
 
       arma::vec motor_pos = {
@@ -250,9 +256,13 @@ protected:
 
       arma::vec joint_pos = transforms_->motor_to_joint(motor_pos);
       arma::mat44 cartesian = transforms_->joint_to_end_effector(joint_pos);
-      RCLCPP_INFO_STREAM(get_logger(), "motor_pos: " << motor_pos.at(0) << " " << motor_pos.at(1) << " " << motor_pos.at(2));
-      RCLCPP_INFO_STREAM(get_logger(), "joint_pos: " << joint_pos(0) << " " << joint_pos(1) << " " << joint_pos(2));
-      RCLCPP_INFO_STREAM(get_logger(), "starting cartesian point: " << cartesian(0, 3) << " " << cartesian(1, 3) << " " << cartesian(2, 3));
+      RCLCPP_INFO_STREAM(get_logger(),
+        "motor_pos: " << motor_pos.at(0) << " " << motor_pos.at(1) << " " << motor_pos.at(2));
+      RCLCPP_INFO_STREAM(get_logger(),
+        "joint_pos: " << joint_pos(0) << " " << joint_pos(1) << " " << joint_pos(2));
+      RCLCPP_INFO_STREAM(get_logger(),
+        "starting cartesian point: " << cartesian(0, 3) << " " << cartesian(1,
+        3) << " " << cartesian(2, 3));
       // add the current position in cartesian coordinates
       goal_msg.x.push_back(cartesian(0, 3));
       goal_msg.y.push_back(cartesian(1, 3));
@@ -267,7 +277,7 @@ protected:
 
       goal_msg.length = int(waypoints.size() + 1);
 
-    }    
+    }
 
     RCLCPP_INFO(get_logger(), "Sending goal");
 
@@ -373,8 +383,7 @@ protected:
         goal_msg.mcp.push_back(wp.at(1));
         goal_msg.pipdip.push_back(wp.at(2));
       }
-    }
-    else {
+    } else {
       // derive current position in cartesian coordinates
 
       arma::vec motor_pos = {
@@ -383,8 +392,10 @@ protected:
         motor_actual_feedback_.motor_positions.at(2)};
 
       arma::vec joint_pos = transforms_->motor_to_joint(motor_pos);
-      RCLCPP_INFO_STREAM(get_logger(), "motor_pos: " << motor_pos.at(0) << " " << motor_pos.at(1) << " " << motor_pos.at(2));
-      RCLCPP_INFO_STREAM(get_logger(), "starting joint_pos: " << joint_pos(0) << " " << joint_pos(1) << " " << joint_pos(2));
+      RCLCPP_INFO_STREAM(get_logger(),
+        "motor_pos: " << motor_pos.at(0) << " " << motor_pos.at(1) << " " << motor_pos.at(2));
+      RCLCPP_INFO_STREAM(get_logger(),
+        "starting joint_pos: " << joint_pos(0) << " " << joint_pos(1) << " " << joint_pos(2));
       // add the current position in cartesian coordinates
       goal_msg.splay.push_back(joint_pos(0));
       goal_msg.mcp.push_back(joint_pos(1));
@@ -398,12 +409,12 @@ protected:
       }
 
       goal_msg.length = int(waypoints.size() + 1);
-    }    
+    }
 
     RCLCPP_INFO(get_logger(), "Sending goal");
 
     auto send_goal_options = rclcpp_action::Client<Linear>::SendGoalOptions();
-    
+
     send_goal_options.goal_response_callback =
       [this](const GoalHandleLinear::SharedPtr & goal_handle) {
         if (!goal_handle) {
@@ -455,11 +466,11 @@ protected:
       goal_msg.mcp.push_back(wp.at(1));
       goal_msg.pipdip.push_back(wp.at(2));
     }
-  
+
     RCLCPP_INFO(get_logger(), "Sending goal");
 
     auto send_goal_options = rclcpp_action::Client<LinearStep>::SendGoalOptions();
-    
+
     send_goal_options.goal_response_callback =
       [this](const GoalHandleLinearStep::SharedPtr & goal_handle) {
         if (!goal_handle) {
@@ -553,7 +564,9 @@ protected:
     RCLCPP_INFO(get_logger(), "Goal completed");
   }
 
-  void send_chirp_goal(int joint, float amp, float freq_init, float freq_final, float time, float v_shift)
+  void send_chirp_goal(
+    int joint, float amp, float freq_init, float freq_final, float time,
+    float v_shift)
   {
     auto goal_msg = Chirp::Goal();
     goal_msg.joint = joint;
@@ -603,12 +616,14 @@ protected:
     RCLCPP_INFO(get_logger(), "Goal completed");
   }
 
-  void send_chirp_velocity_goal(int joint, float amp, float freq_init, float freq_final, float time, std::vector<float> start_pos)
+  void send_chirp_velocity_goal(
+    int joint, float amp, float freq_init, float freq_final, float time,
+    std::vector<float> start_pos)
   {
     // send the start pos
     std::vector<float> zero_pos = {0, 0, 0};
     send_linear_goal(0, {start_pos});
-    
+
     auto goal_msg = ChirpVelocity::Goal();
     goal_msg.joint = joint;
     goal_msg.amp = amp;
@@ -633,7 +648,8 @@ protected:
       const std::shared_ptr<const ChirpVelocity::Feedback>) {
         RCLCPP_INFO(get_logger(), "feedback received...");
       };
-    send_goal_options.result_callback = [this](const GoalHandleChirpVelocity::WrappedResult & result) {
+    send_goal_options.result_callback =
+      [this](const GoalHandleChirpVelocity::WrappedResult & result) {
         switch (result.code) {
           case rclcpp_action::ResultCode::SUCCEEDED: break;
           case rclcpp_action::ResultCode::ABORTED:

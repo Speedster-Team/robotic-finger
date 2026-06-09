@@ -3,7 +3,7 @@
     # Sinusoidal demo parameters
     sinusoidal:
       repeat: 1
-      joint: `
+      joint: 2
       amp: 0.1
       freq: 10.0
       v_offset: 0.7
@@ -38,7 +38,6 @@
       waypoints: [
         0.0, 0.0, 0.0,
         0.0, 1.3, 1.3]
-
 
     # Force step demo parameters
     force:

@@ -52,7 +52,7 @@ public:
 /// \param q_end_effector The end-effector position (x,y,z no angle)
 /// \param tolerance The allowable position error tolerance (in meters)
 /// \return The joint angles corresponding to the given end-effector position
-arma::vec end_effector_to_joint(const arma::vec & q_end_effector, double tolerance=1e-6);
+  arma::vec end_effector_to_joint(const arma::vec & q_end_effector, double tolerance = 1e-6);
 
 
 /// \brief Get the Jacobian matrix in space frame (collapsed for pip/dip)

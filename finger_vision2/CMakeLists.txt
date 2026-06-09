@@ -28,7 +28,6 @@ add_executable(pixel_vision src/pixel_vision.cpp)
 
 target_link_libraries(vision
   rclcpp::rclcpp
-  
   ${cv_bridge_TARGETS}
   ${OpenCV_TARGETS}
   ${sensor_msgs_TARGETS}

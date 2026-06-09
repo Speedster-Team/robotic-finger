@@ -47,6 +47,7 @@ class Ros2Drake(LeafSystem):
                 self._ros_position_callback,
                 10,
             )
+
     def _calc_position(self, context, output):
         """Input motor positions."""
         state = context.get_discrete_state(
@@ -57,7 +58,8 @@ class Ros2Drake(LeafSystem):
         """Save new position topic messages."""
         data = list(msg.motor_positions)
         if len(data) == 3:
-            self._latest_position = np.array((data + [0.0] * self.nu)[:self.nu])
+            self._latest_position = np.array(
+                (data + [0.0] * self.nu)[:self.nu])
 
     def _update_position(self, context, discrete_state):
         """Spin ROS node every time there is a simulation update for msgs."""

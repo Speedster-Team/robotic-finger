@@ -40,13 +40,13 @@ void SerialInterface::send_command(
   // Build data lines first so we can CRC them the same way Teensy does
   std::vector<std::string> data_lines;
   for (auto & q_motor : q_motor_list) {
-      std::ostringstream ss;
-      ss << std::fixed << std::setprecision(4)
+    std::ostringstream ss;
+    ss   << std::fixed << std::setprecision(4)
          << q_motor.at(0) << " "
          << q_motor.at(1) << " "
          << q_motor.at(2);
-      data_lines.push_back(ss.str());
-  }   
+    data_lines.push_back(ss.str());
+  }
 
   // compute checksum
   uint8_t checksum = 0x00;
@@ -57,7 +57,8 @@ void SerialInterface::send_command(
   }
 
   // Assemble payload
-  std::string payload = "D " + std::to_string(length) + " " + std::to_string(repeat) + " " + mode + "\n";
+  std::string payload = "D " + std::to_string(length) + " " + std::to_string(repeat) + " " + mode +
+    "\n";
   for (auto & line : data_lines) {
     payload += line + "\n";
   }

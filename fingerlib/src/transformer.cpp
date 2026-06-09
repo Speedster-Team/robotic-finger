@@ -21,7 +21,7 @@ Transformer::Transformer(
 
 arma::vec Transformer::joint_to_motor(const arma::vec & q_joint, bool enforce_limits)
 {
-  if(enforce_limits){
+  if(enforce_limits) {
     bool inside =
       arma::all(q_joint >= _joint_min) &&
       arma::all(q_joint <= _joint_max);
@@ -41,7 +41,7 @@ arma::vec Transformer::motor_to_joint(const arma::vec & q_motor, bool enforce_li
   arma::vec q_tendon = _Ra * q_motor;
   arma::vec q_joint = _structure_inv.t() * q_tendon;
 
-  if(enforce_limits){
+  if(enforce_limits) {
     bool inside =
       arma::all(q_joint >= _joint_min) &&
       arma::all(q_joint <= _joint_max);
@@ -105,42 +105,43 @@ arma::vec Transformer::end_effector_to_joint(const arma::vec & q_end_effector, d
   };
 
   auto try_ik = [&](const arma::vec & seed, arma::vec & thetalist) -> bool
-  {
-    thetalist = arma::min(arma::max(seed, _joint_min), _joint_max);
+    {
+      thetalist = arma::min(arma::max(seed, _joint_min), _joint_max);
 
-    for (int i = 0; i < max_iter; ++i) {
-      const arma::vec pos_error = q_end_effector - joint_to_end_effector(thetalist).col(3).head(3);
+      for (int i = 0; i < max_iter; ++i) {
+        const arma::vec pos_error = q_end_effector -
+          joint_to_end_effector(thetalist).col(3).head(3);
 
-      if (arma::norm(pos_error) <= tolerance) {
-        return true;
-      }
+        if (arma::norm(pos_error) <= tolerance) {
+          return true;
+        }
 
-      arma::mat44 T(arma::fill::eye);
-      T(arma::span(0, 2), 3) = -q_end_effector;
+        arma::mat44 T(arma::fill::eye);
+        T(arma::span(0, 2), 3) = -q_end_effector;
 
-      const arma::mat Js = mr::Adjoint(T) * get_jacobian_space(thetalist);
-      const arma::mat Js_sub = Js.submat(3, 0, 5, 2);
+        const arma::mat Js = mr::Adjoint(T) * get_jacobian_space(thetalist);
+        const arma::mat Js_sub = Js.submat(3, 0, 5, 2);
 
-      arma::vec dtheta;
-      if (arma::cond(Js_sub) > 1e6) {
-        std::cout << "Warning: Jacobian near singular, using damped least squares" << std::endl;
-        dtheta = Js_sub.t() * arma::solve(
+        arma::vec dtheta;
+        if (arma::cond(Js_sub) > 1e6) {
+          std::cout << "Warning: Jacobian near singular, using damped least squares" << std::endl;
+          dtheta = Js_sub.t() * arma::solve(
           Js_sub * Js_sub.t() + lambda * arma::eye(3, 3), pos_error);
-      } else {
-        dtheta = arma::pinv(Js_sub) * pos_error;
+        } else {
+          dtheta = arma::pinv(Js_sub) * pos_error;
+        }
+
+        const double step_norm = arma::norm(dtheta);
+        if (step_norm > max_step) {
+          dtheta *= max_step / step_norm;
+        }
+
+        thetalist += dtheta;
+        thetalist = arma::min(arma::max(thetalist, _joint_min), _joint_max);
       }
 
-      const double step_norm = arma::norm(dtheta);
-      if (step_norm > max_step) {
-        dtheta *= max_step / step_norm;
-      }
-
-      thetalist += dtheta;
-      thetalist = arma::min(arma::max(thetalist, _joint_min), _joint_max);
-    }
-
-    return false;
-  };
+      return false;
+    };
 
   arma::vec result;
   for (std::size_t s = 0; s < seeds.size(); ++s) {

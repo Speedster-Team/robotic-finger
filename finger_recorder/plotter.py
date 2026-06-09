@@ -1,19 +1,47 @@
-"""Plotting code for recorded bags."""
+"""
+Reads motor position and joint angle data from a recorded MCAP bag file.
 
-from finger_interfaces.msg import MotorFeedback
+Plots setpoint vs. actual vs. Drake time-series for all three joints. Optionally includes
+Drake joint torques as a third subplot column (toggle via DRAKE_JOINT_TORQUES).
 
-import os
+READS FROM BAG:
+  + /motor_pos_actual_feedback   (finger_interfaces/msg/MotorFeedback)
+    - Actual motor positions from the bridge
+  + /motor_pos_setpoint_feedback (finger_interfaces/msg/MotorFeedback)
+    - Commanded motor positions from the bridge
+  + /motor_pos_drake_feedback    (finger_interfaces/msg/MotorFeedback)
+    - Motor positions reported directly by Drake
+  + /actual/joint_feedback       (finger_interfaces/msg/MotorFeedback)
+    - Joint positions from the actual kinematic simulation
+  + /setpoint/joint_feedback     (finger_interfaces/msg/MotorFeedback)
+    - Joint positions from the setpoint kinematic simulation
+  + /drake/joint_feedback        (finger_interfaces/msg/MotorFeedback)
+    - Joint positions from the Drake dynamic simulation
+  + /joint_torque_drake_feedback (finger_interfaces/msg/MotorFeedback)
+    - Joint torques reported by Drake (only read when DRAKE_JOINT_TORQUES = True)
+
+CONFIGURATION:
+  DRAKE_JOINT_TORQUES (bool)
+    - False: plot motor position and joint angle columns only
+    - True:  add a third subplot column for Drake joint torques
+  DATA_FOLDER (str)
+    - Path to the directory containing recorded bag files
+    - Default: 'src/robotic-finger/finger_recorder/bags/'
+  FILE (str)
+    - 'latest': automatically selects the most recently recorded bag in DATA_FOLDER
+    - Any other string: treated as a bag folder name relative to DATA_FOLDER
+  JOINT_LABELS (list[str])
+    - Display labels for the three joint axes (splay, MCP flex, PIP/DIP flex)
+    - Values are shown in degrees; the bag data is stored in radians and converted on load
+"""
 
 import csv
-
 import glob
 
+from finger_interfaces.msg import MotorFeedback
 import matplotlib.pyplot as plt
-
 import numpy as np
-
 from rclpy.serialization import deserialize_message
-
 import rosbag2_py
 
 DRAKE_JOINT_TORQUES = False
@@ -23,6 +51,7 @@ DATA_FOLDER = 'src/robotic-finger/finger_recorder/bags/'
 FILE = 'latest'
 
 JOINT_LABELS = ['splay [deg]', 'mcp_flex [deg]', 'pip/dip_flex [deg]']
+
 
 def save_data_to_csv(data, joint_labels, output_file='csv/plotted_data.csv'):
     """Save the loaded data to a CSV file."""
@@ -37,13 +66,13 @@ def save_data_to_csv(data, joint_labels, output_file='csv/plotted_data.csv'):
             for t, positions in values:
                 all_times.add(t)
                 for i, label in enumerate(joint_labels):
-                    key = f"{group}_{series}_{label}"
+                    key = f'{group}_{series}_{label}'
                     if key not in data_dict:
                         data_dict[key] = {}
                     data_dict[key][t] = np.rad2deg(positions[i])
 
     if not all_times:
-        print("No data to save")
+        print('No data to save')
         return
 
     sorted_times = sorted(all_times)
@@ -54,12 +83,13 @@ def save_data_to_csv(data, joint_labels, output_file='csv/plotted_data.csv'):
         writer.writeheader()
 
         for t in sorted_times:
-            row = {'Time (s)': f"{t:.6f}"}
+            row = {'Time (s)': f'{t:.6f}'}
             for col in fieldnames[1:]:
-                row[col] = f"{data_dict[col].get(t, '')}"  # Empty string if time not in this series
+                row[col] = f"{data_dict[col].get(t, '')}"
             writer.writerow(row)
 
-    print(f"Data saved to {output_file}")
+    print(f'Data saved to {output_file}')
+
 
 if DRAKE_JOINT_TORQUES:
     TOPICS = {
@@ -72,7 +102,7 @@ if DRAKE_JOINT_TORQUES:
         'joint_torque_drake_feedback':     ('joint_torque', 'drake'),
     }
 
-    data = {
+    data: dict[str, dict[str, list[tuple[float, list[float]]]]] = {
         'motor_pos':   {'actual': [], 'setpoint': [], 'drake': []},
         'joint_angle': {'actual': [], 'setpoint': [], 'drake': []},
         'joint_torque': {'drake': []},
@@ -103,29 +133,35 @@ if DRAKE_JOINT_TORQUES:
             if len(positions) == len(JOINT_LABELS):
                 data[group][series].append((stamp, positions))
 
-    print("Data loaded:")
+    print('Data loaded:')
     for group, series_dict in data.items():
         for series, values in series_dict.items():
-            print(f"  {group}/{series}: {len(values)} points")
+            print(f'  {group}/{series}: {len(values)} points')
 
     # Save data to CSV
     # save_data_to_csv(data, JOINT_LABELS, DATA_FOLDER + 'plotted_data.csv')
 
-    fig, axes = plt.subplots(len(JOINT_LABELS), len(data), figsize=(14, 8), sharex=True)
+    fig, axes = plt.subplots(len(JOINT_LABELS), len(data), figsize=(14, 8),
+                             sharex=True)
 
     for col, (group, title) in enumerate([('motor_pos', 'Motor Position'),
-                                        ('joint_angle', 'Joint Angle'),
-                                        ('joint_torque', 'Joint Torque')]):
+                                          ('joint_angle', 'Joint Angle'),
+                                          ('joint_torque', 'Joint Torque')]):
 
         for i, label in enumerate(JOINT_LABELS):
             ax = axes[i, col]
-            for series_name, color in [('actual', 'tab:blue'), ('setpoint', 'tab:red'), ('drake', 'tab:green')]:
+            for series_name, color in [('actual', 'tab:blue'),
+                                       ('setpoint', 'tab:red'),
+                                       ('drake', 'tab:green')]:
                 if not data[group].get(series_name):
                     continue
                 filtered = [(t, v) for t, v in data[group][series_name]]
                 ts, vals_raw = zip(*filtered)
                 vals = np.array(vals_raw)
-                ax.plot(ts, np.rad2deg(vals[:, i]), label=series_name, color=color,
+                ax.plot(ts,
+                        np.rad2deg(vals[:, i]),
+                        label=series_name,
+                        color=color,
                         linestyle='-' if (series_name == 'actual') else '--')
             if col == 0:
                 ax.set_ylabel(label)
@@ -149,7 +185,7 @@ else:
         'drake/joint_feedback':     ('joint_angle', 'drake'),
     }
 
-    data = {
+    data = {  # type: ignore[no-redef]
         'motor_pos':   {'actual': [], 'setpoint': [], 'drake': []},
         'joint_angle': {'actual': [], 'setpoint': [], 'drake': []},
     }
@@ -179,28 +215,35 @@ else:
             if len(positions) == len(JOINT_LABELS):
                 data[group][series].append((stamp, positions))
 
-    print("Data loaded:")
+    print('Data loaded:')
     for group, series_dict in data.items():
         for series, values in series_dict.items():
-            print(f"  {group}/{series}: {len(values)} points")
+            print(f'  {group}/{series}: {len(values)} points')
 
     # Save data to CSV
     # save_data_to_csv(data, JOINT_LABELS, DATA_FOLDER + 'plotted_data.csv')
 
-    fig, axes = plt.subplots(len(JOINT_LABELS), len(data), figsize=(14, 8), sharex=True)
+    fig, axes = plt.subplots(len(JOINT_LABELS),
+                             len(data),
+                             figsize=(14, 8),
+                             sharex=True)
 
     for col, (group, title) in enumerate([('motor_pos', 'Motor Position'),
-                                        ('joint_angle', 'Joint Angle')]):
+                                          ('joint_angle', 'Joint Angle')]):
 
         for i, label in enumerate(JOINT_LABELS):
             ax = axes[i, col]
-            for series_name, color in [('actual', 'tab:blue'), ('setpoint', 'tab:red'), ('drake', 'tab:green')]:
+            for series_name, color in [('actual', 'tab:blue'),
+                                       ('setpoint', 'tab:red'),
+                                       ('drake', 'tab:green')]:
                 if not data[group].get(series_name):
                     continue
                 filtered = [(t, v) for t, v in data[group][series_name]]
                 ts, vals_raw = zip(*filtered)
                 vals = np.array(vals_raw)
-                ax.plot(ts, np.rad2deg(vals[:, i]), label=series_name, color=color,
+                ax.plot(ts, np.rad2deg(vals[:, i]),
+                        label=series_name,
+                        color=color,
                         linestyle='-' if (series_name == 'actual') else '--')
             if col == 0:
                 ax.set_ylabel(label)

@@ -1,8 +1,4 @@
 repositories:
-  easy_handeye2:
-    type: git
-    url: https://github.com/Mjenz/easy_handeye2.git
-    version: master
   modern-robotics-cpp:
     type: git
     url: https://github.com/nu-jliu/modern-robotics-cpp

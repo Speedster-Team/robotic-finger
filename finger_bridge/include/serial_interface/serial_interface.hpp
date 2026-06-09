@@ -42,7 +42,9 @@ public:
   /// \param length - The length of the data message
   /// \param repeat - A 1 or 0 indicating if trajectory should be repeated
   /// \param mode - The control mode type for this trajectory
-  void send_command(std::vector<std::vector<float>> q_motor_list, int length, int repeat, char mode);
+  void send_command(
+    std::vector<std::vector<float>> q_motor_list, int length, int repeat,
+    char mode);
 
   /// \brief Send go command to teensy
   void send_start();

@@ -76,12 +76,12 @@ public:
     gaussian_range.step = 2;
 
     auto make_desc = [](const std::string & description,
-                        const rcl_interfaces::msg::IntegerRange & range) {
-      rcl_interfaces::msg::ParameterDescriptor d;
-      d.description = description;
-      d.integer_range.push_back(range);
-      return d;
-    };
+      const rcl_interfaces::msg::IntegerRange & range) {
+        rcl_interfaces::msg::ParameterDescriptor d;
+        d.description = description;
+        d.integer_range.push_back(range);
+        return d;
+      };
 
     // ---- declare parameters ----
     declare_parameter<int>(

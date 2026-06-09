@@ -336,8 +336,8 @@ def main():
     pid_controller = fingersim.builder.AddSystem(
         PidController(kp=np.array([100, 100, 100]),
                       ki=np.array([1, 1, 1]),
-                      kd=np.array([5, 5, 5])
-    ))
+                      kd=np.array([5, 5, 5])))
+
     fingersim.pid_controller = pid_controller
 
     desired_state_interp = fingersim.builder.AddSystem(

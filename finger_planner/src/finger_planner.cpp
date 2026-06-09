@@ -185,7 +185,8 @@ public:
           }
 
           // print request
-          RCLCPP_DEBUG(get_logger(), "Received cartesian goal request with length %d and waypoints:",
+          RCLCPP_DEBUG(get_logger(),
+          "Received cartesian goal request with length %d and waypoints:",
           goal->length);
 
           // check that waypoints are within the joint limits
@@ -204,7 +205,8 @@ public:
                 goal->z.at(i) << ")");
               auto point = transforms_->end_effector_to_joint(waypoints_temp[i]);
               RCLCPP_DEBUG_STREAM(get_logger(),
-                "waypoint " << i << " in joint space: (" << point(0) << ", " << point(1) << ", " << point(2) << ")");
+                "waypoint " << i << " in joint space: (" << point(0) << ", " << point(1) << ", " <<
+                point(2) << ")");
             }
           } catch (std::runtime_error & e) {
             RCLCPP_ERROR_STREAM(get_logger(),
@@ -334,17 +336,21 @@ public:
           // check that waypoints are within the joint limits
           try {
             RCLCPP_DEBUG_STREAM(get_logger(),
-            "waypoint 0: (" << goal->splay.at(0) << ", " << goal->mcp.at(0) << ", " << goal->pipdip.at(0) << ")");
+            "waypoint 0: (" << goal->splay.at(0) << ", " << goal->mcp.at(0) << ", " <<
+              goal->pipdip.at(0) << ")");
 
             auto start = transforms_->joint_to_end_effector(waypoints_temp[0]);
             RCLCPP_DEBUG_STREAM(get_logger(),
-            "waypoint 0 in cartesian space: (" << start(0) << ", " << start(1) << ", " << start(2) << ")");
+            "waypoint 0 in cartesian space: (" << start(0) << ", " << start(1) << ", " <<
+              start(2) << ")");
             for(auto i = 1; i < goal->length; i++) {
               RCLCPP_DEBUG_STREAM(get_logger(),
-              "waypoint " << i << ": (" << goal->splay.at(i) << ", " << goal->mcp.at(i) << ", " << goal->pipdip.at(i) << ")");
+              "waypoint " << i << ": (" << goal->splay.at(i) << ", " << goal->mcp.at(i) << ", " <<
+                goal->pipdip.at(i) << ")");
               auto point = transforms_->joint_to_end_effector(waypoints_temp[i]);
               RCLCPP_DEBUG_STREAM(get_logger(),
-                "waypoint " << i << " in cartesian space: (" << point(0) << ", " << point(1) << ", " << point(2) << ")");
+                "waypoint " << i << " in cartesian space: (" << point(0) << ", " << point(1) <<
+                ", " << point(2) << ")");
             }
           } catch (std::runtime_error & e) {
             RCLCPP_ERROR_STREAM(get_logger(),
@@ -417,17 +423,21 @@ public:
           // check that waypoints are within the joint limits
           try {
             RCLCPP_DEBUG_STREAM(get_logger(),
-            "waypoint 0: (" << goal->splay.at(0) << ", " << goal->mcp.at(0) << ", " << goal->pipdip.at(0) << ")");
+            "waypoint 0: (" << goal->splay.at(0) << ", " << goal->mcp.at(0) << ", " <<
+              goal->pipdip.at(0) << ")");
 
             auto start = transforms_->joint_to_end_effector(waypoints_temp[0]);
             RCLCPP_DEBUG_STREAM(get_logger(),
-            "waypoint 0 in joint space: (" << start(0) << ", " << start(1) << ", " << start(2) << ")");
+            "waypoint 0 in joint space: (" << start(0) << ", " << start(1) << ", " << start(2) <<
+              ")");
             for(auto i = 1; i < goal->length; i++) {
               RCLCPP_DEBUG_STREAM(get_logger(),
-              "waypoint " << i << ": (" << goal->splay.at(i) << ", " << goal->mcp.at(i) << ", " << goal->pipdip.at(i) << ")");
+              "waypoint " << i << ": (" << goal->splay.at(i) << ", " << goal->mcp.at(i) << ", " <<
+                goal->pipdip.at(i) << ")");
               auto point = transforms_->joint_to_end_effector(waypoints_temp[i]);
               RCLCPP_DEBUG_STREAM(get_logger(),
-                "waypoint " << i << " in joint space: (" << point(0) << ", " << point(1) << ", " << point(2) << ")");
+                "waypoint " << i << " in joint space: (" << point(0) << ", " << point(1) << ", " <<
+                point(2) << ")");
             }
           } catch (std::runtime_error & e) {
             RCLCPP_ERROR_STREAM(get_logger(),
@@ -469,7 +479,8 @@ public:
       timer_cb_group_);
       };
 
-    linear_step_action_server_ = rclcpp_action::create_server<finger_interfaces::action::LinearStep>(
+    linear_step_action_server_ =
+      rclcpp_action::create_server<finger_interfaces::action::LinearStep>(
     this,
     "/linear_step_move",
     linear_step_handle_goal,
@@ -486,13 +497,16 @@ public:
       {
         RCLCPP_DEBUG(get_logger(), "Received force step goal request:");
 
-        if ((int(goal->q_joint.size()) == 3) && (int(goal->force_low.size()) == 3) && (int(goal->force_high.size()) == 3)) {
-        
+        if ((int(goal->q_joint.size()) == 3) && (int(goal->force_low.size()) == 3) &&
+          (int(goal->force_high.size()) == 3))
+        {
+
           // accept request
           return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
         } else {
           // print error
-          RCLCPP_ERROR(get_logger(), "Goal request REJECTED because joint state or force goals are malformed.");
+          RCLCPP_ERROR(get_logger(),
+          "Goal request REJECTED because joint state or force goals are malformed.");
 
           // reject request
           return rclcpp_action::GoalResponse::REJECT;
@@ -542,8 +556,9 @@ public:
 
           // print request
           RCLCPP_DEBUG_STREAM(get_logger(), "Received chirp goal request for joint" <<
-            goal->joint << " with amp " << goal->amp << ", freq " << goal->freq_init << 
-            ", freq_final " << goal->freq_final << ", time " << goal->time << ", and v_shift " << goal->v_shift);
+            goal->joint << " with amp " << goal->amp << ", freq " << goal->freq_init <<
+            ", freq_final " << goal->freq_final << ", time " << goal->time << ", and v_shift " <<
+            goal->v_shift);
 
           // accept request
           return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
@@ -599,8 +614,9 @@ public:
 
           // print request
           RCLCPP_DEBUG_STREAM(get_logger(), "Received chirp velocity goal request for joint" <<
-            goal->joint << " with amp " << goal->amp << ", freq " << goal->freq_init << 
-            ", freq_final " << goal->freq_final << ", time " << goal->time << ", and start_pos " << goal->start_pos.at(goal->joint));
+            goal->joint << " with amp " << goal->amp << ", freq " << goal->freq_init <<
+            ", freq_final " << goal->freq_final << ", time " << goal->time << ", and start_pos " <<
+            goal->start_pos.at(goal->joint));
 
           // accept request
           return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
@@ -679,7 +695,8 @@ private:
   rclcpp_action::Server<finger_interfaces::action::LinearStep>::SharedPtr linear_step_action_server_;
   rclcpp_action::Server<finger_interfaces::action::Force>::SharedPtr force_step_action_server_;
   rclcpp_action::Server<finger_interfaces::action::Chirp>::SharedPtr chirp_action_server_;
-  rclcpp_action::Server<finger_interfaces::action::ChirpVelocity>::SharedPtr chirp_velocity_action_server_;
+  rclcpp_action::Server<finger_interfaces::action::ChirpVelocity>::SharedPtr
+    chirp_velocity_action_server_;
   rclcpp::TimerBase::SharedPtr action_timer_;
   std::shared_ptr<Transformer> transforms_;
   std::shared_ptr<JointTrajectory> generator_;
@@ -713,19 +730,19 @@ private:
     declare_parameter("r9", 0.0);
     declare_parameter("r11", 0.0);
     declare_parameter("slist", std::vector<double>{
-        0, 0, 1, 0, 0, 0,
-        -1, 0, 0, 0, 0, 0.0178,
-        -1, 0, 0, 0, 0, 0.079,
-        -1, 0, 0, 0, 0, 0.1195});
+      0, 0, 1, 0, 0, 0,
+      -1, 0, 0, 0, 0, 0.0178,
+      -1, 0, 0, 0, 0, 0.079,
+      -1, 0, 0, 0, 0, 0.1195});
     declare_parameter("joint_min", std::vector<double>{-0.55, -0.2, -0.01});
     declare_parameter("joint_max", std::vector<double>{0.55, 1.572, 1.572});
     declare_parameter("M", std::vector<double>{
-        1, 0, 0, 0,
-        0, 1, 0, 0.15,
-        0, 0, 1, 0,
-        0, 0, 0, 1});
+      1, 0, 0, 0,
+      0, 1, 0, 0.15,
+      0, 0, 1, 0,
+      0, 0, 0, 1});
     declare_parameter("four_bar_lengths", std::vector<double>{
-        8.83765e-3, 40.6e-3, 8.91536e-3, 37.79903e-3});
+      8.83765e-3, 40.6e-3, 8.91536e-3, 37.79903e-3});
 
     ra_ = get_parameter("ra").as_double();
     rb_ = get_parameter("rb").as_double();
@@ -741,10 +758,10 @@ private:
 
     auto slist_flat = get_parameter("slist").as_double_array();
     slist_ = {
-        arma::vec6(slist_flat.data()),
-        arma::vec6(slist_flat.data() + 6),
-        arma::vec6(slist_flat.data() + 12),
-        arma::vec6(slist_flat.data() + 18)};
+      arma::vec6(slist_flat.data()),
+      arma::vec6(slist_flat.data() + 6),
+      arma::vec6(slist_flat.data() + 12),
+      arma::vec6(slist_flat.data() + 18)};
 
     auto jmin_flat = get_parameter("joint_min").as_double_array();
     joint_min_ = arma::vec(jmin_flat);
@@ -944,7 +961,8 @@ private:
             waypoints_temp.push_back({goal.x.at(i), goal.y.at(i), goal.z.at(i)});
           }
 
-          RCLCPP_DEBUG(get_logger(), "Received cartesian goal request with length %d and waypoints:",
+          RCLCPP_DEBUG(get_logger(),
+          "Received cartesian goal request with length %d and waypoints:",
           goal.length);
 
           return generator_->generate_cartesian(waypoints_temp, max_vel_, max_accel_);
@@ -1006,7 +1024,8 @@ private:
             waypoints_temp.push_back({goal.splay.at(i), goal.mcp.at(i), goal.pipdip.at(i)});
           }
 
-          RCLCPP_DEBUG(get_logger(), "Received linear step goal request with length %d and waypoints:",
+          RCLCPP_DEBUG(get_logger(),
+          "Received linear step goal request with length %d and waypoints:",
           goal.length);
 
           return generator_->generate_step(waypoints_temp, goal.freq);
@@ -1050,16 +1069,20 @@ private:
     execute_goal<finger_interfaces::action::Force>(
       goal_handle, force_step_result_,
       [this](const auto & goal) {
-        
+
         RCLCPP_DEBUG_STREAM(get_logger(), "Received force step goal request at\njoint state <" <<
-        goal.q_joint.at(0) << ", "<< goal.q_joint.at(1) << ", " << goal.q_joint.at(2) << ">\nforce_low <" <<
-        goal.force_low.at(0) << ", "<< goal.force_low.at(1) << ", " << goal.force_low.at(2) << ">\nforce_high <" <<
-        goal.force_high.at(0) << ", "<< goal.force_high.at(1) << ", " << goal.force_high.at(2) << ">\nfrequency " << goal.frequency);
+          goal.q_joint.at(0) << ", " << goal.q_joint.at(1) << ", " << goal.q_joint.at(2) <<
+          ">\nforce_low <" <<
+          goal.force_low.at(0) << ", " << goal.force_low.at(1) << ", " << goal.force_low.at(2) <<
+          ">\nforce_high <" <<
+          goal.force_high.at(0) << ", " << goal.force_high.at(1) << ", " << goal.force_high.at(2) <<
+          ">\nfrequency " << goal.frequency);
 
         // accept request
         arma::vec q_joint = {goal.q_joint.at(0), goal.q_joint.at(1), goal.q_joint.at(2)};
         arma::vec force_low = {goal.force_low.at(0), goal.force_low.at(1), goal.force_low.at(2)};
-        arma::vec force_high = {goal.force_high.at(0), goal.force_high.at(1), goal.force_high.at(2)};
+        arma::vec force_high = {goal.force_high.at(0), goal.force_high.at(1),
+          goal.force_high.at(2)};
 
         return generator_->generate_force_step(q_joint, force_low, force_high, goal.frequency);
       },
@@ -1074,11 +1097,13 @@ private:
       [this](const auto & goal) {
         if (((goal.joint == 0) || (goal.joint == 1) || (goal.joint == 2))) {
           RCLCPP_DEBUG_STREAM(get_logger(), "Received chirp goal request for joint" <<
-            goal.joint << " with amp " << goal.amp << ", freq " << goal.freq_init << 
-            ", freq_final " << goal.freq_final << ", time " << goal.time << ", and v_shift " << goal.v_shift);
+            goal.joint << " with amp " << goal.amp << ", freq " << goal.freq_init <<
+            ", freq_final " << goal.freq_final << ", time " << goal.time << ", and v_shift " <<
+            goal.v_shift);
 
           // accept request
-          return generator_->generate_chirp(goal.joint, goal.amp, goal.freq_init, goal.freq_final, goal.time, goal.v_shift);
+          return generator_->generate_chirp(goal.joint, goal.amp, goal.freq_init, goal.freq_final,
+          goal.time, goal.v_shift);
         } else {
           RCLCPP_ERROR(get_logger(), "Goal request REJECTED because joint is not 0, 1, or 2.");
 
@@ -1096,12 +1121,17 @@ private:
       goal_handle, chirp_velocity_result_,
       [this](const auto & goal) {
         if (((goal.joint == 0) || (goal.joint == 1) || (goal.joint == 2))) {
-          RCLCPP_DEBUG_STREAM(get_logger(), "Received chirp goal request for joint" << goal.joint << " with amp " << goal.amp << ", freq " << goal.freq_init << 
-            ", freq_final " << goal.freq_final << ", time " << goal.time << ", and v_shift " << "\nstart_pos <" <<
-            goal.start_pos.at(0) << ", "<< goal.start_pos.at(1) << ", " << goal.start_pos.at(2) << ">");
+          RCLCPP_DEBUG_STREAM(get_logger(),
+          "Received chirp goal request for joint" << goal.joint << " with amp " << goal.amp <<
+            ", freq " << goal.freq_init <<
+            ", freq_final " << goal.freq_final << ", time " << goal.time << ", and v_shift " <<
+            "\nstart_pos <" <<
+            goal.start_pos.at(0) << ", " << goal.start_pos.at(1) << ", " << goal.start_pos.at(2) <<
+            ">");
 
           // accept request
-          return generator_->generate_chirp_velocity(goal.joint, goal.amp, goal.freq_init, goal.freq_final, goal.time, goal.start_pos.at(goal.joint));
+          return generator_->generate_chirp_velocity(goal.joint, goal.amp, goal.freq_init,
+          goal.freq_final, goal.time, goal.start_pos.at(goal.joint));
 
         } else {
           RCLCPP_ERROR(get_logger(), "Goal request REJECTED because joint is not 0, 1, or 2.");

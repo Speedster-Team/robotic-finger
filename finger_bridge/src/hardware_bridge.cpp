@@ -79,7 +79,8 @@ public:
           repeat_ = request->repeat;
 
           // send serial command
-          serial_interface_->send_command(commands_, request->length, request->repeat, request->mode);
+          serial_interface_->send_command(commands_, request->length, request->repeat,
+          request->mode);
 
           // wait for result
           while (serial_interface_->get_message_status() == MessageStatus::NO_STATUS) {}
@@ -193,7 +194,8 @@ public:
           auto fb = serial_interface_->get_feedback();
 
           motor_actual_feedback_.motor_positions = std::vector<float>{fb.at(0), fb.at(1), fb.at(2)};
-          motor_setpoint_feedback_.motor_positions = std::vector<float>{fb.at(3), fb.at(4), fb.at(5)};
+          motor_setpoint_feedback_.motor_positions = std::vector<float>{fb.at(3), fb.at(4),
+            fb.at(5)};
           motor_activity_feedback_.active = fb.at(6);
 
           motor_actual_feedback_.header.stamp = now();

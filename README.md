@@ -7,6 +7,9 @@ This project controls a 3DOF robotic finger designed by the speedster team for R
 
 This repository can run a set of benchmarking demos as well as whackamole demos in both simulation and on hardware.
 
+## Whackamole Hardware Demo
+https://github.com/user-attachments/assets/4b4d7de7-5702-4842-89a0-102e31de5055
+
 ## Drake Simulation Demo
 https://github.com/user-attachments/assets/2588c1cb-209b-4e95-b6a7-d67c1fb5cd49
 

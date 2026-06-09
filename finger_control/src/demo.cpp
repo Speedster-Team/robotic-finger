@@ -64,7 +64,6 @@ using namespace std::chrono_literals;
 class FingerDemo : public FingerControlBase
 {
 public:
-
   /// \brief Create an instance of FingerDemo for running demos
   FingerDemo()
   : FingerControlBase("finger_demo")
@@ -77,45 +76,26 @@ public:
       // send_linear_goal(0, linear_waypoints_); // go to start
 
       send_linear_goal(linear_repeat_, linear_waypoints_);
-    }
-
-    else if (demo_ == "linear_step") {
+    } else if (demo_ == "linear_step") {
       RCLCPP_INFO(get_logger(), "Running linear step joint movement demo...");
 
       // send_linear_goal(0, {linear_step_waypoints_.at(0)}); // go to start
 
       send_linear_step_goal(linear_step_repeat_, linear_step_freq_, linear_step_waypoints_);
-    }
-
-    else if (demo_ == "sinusoidal") {
+    } else if (demo_ == "sinusoidal") {
       RCLCPP_INFO(get_logger(), "Running sinusoidal movement demo..."); // go to start
 
-      send_sinusoid_goal(sinusoidal_repeat_, sinusoidal_joint_, sinusoidal_amp_, sinusoidal_freq_, sinusoidal_v_offset_);
+      send_sinusoid_goal(sinusoidal_repeat_, sinusoidal_joint_, sinusoidal_amp_, sinusoidal_freq_,
+        sinusoidal_v_offset_);
 
-      // send_linear_goal(0, {{0.0, 0.0, 0.7}});
-      // rclcpp::sleep_for(50ms);
-      // send_sinusoid_goal(1, 2, 0.35, 1.0, 0.7);
-      // rclcpp::sleep_for(50ms);
-
-      // send_linear_goal(0, {{0.0, 0.7, 0.0}});
-      // rclcpp::sleep_for(50ms);
-      // send_sinusoid_goal(1, 1, 0.35, 1.0, 0.7);
-      // rclcpp::sleep_for(50ms);
-      // send_linear_goal(0, {{0.0, 0.0, 0.0}});
-      // rclcpp::sleep_for(50ms);
-      // send_sinusoid_goal(1, 0, 0.25, 1.0, 0.0);
-    }
-
-    else if (demo_ == "force_step") {
+    } else if (demo_ == "force_step") {
       RCLCPP_INFO(get_logger(), "Running force step demo...");
       std::vector<float> q_joints(force_q_state_.begin(), force_q_state_.end());
       std::vector<float> force_low(force_low_.begin(), force_low_.end());
       std::vector<float> force_high(force_high_.begin(), force_high_.end());
 
       send_force_step_goal(q_joints, force_low, force_high, force_freq_, force_repeat_);
-    }
-
-    else if (demo_ == "ik") {
+    } else if (demo_ == "ik") {
       RCLCPP_INFO(get_logger(), "Running inverse kinematics demo...");
 
       // move to start
@@ -126,65 +106,60 @@ public:
         rclcpp::sleep_for(250ms);
         send_cartesian_goal(0, {ik_waypoints_.at(1)});
         rclcpp::sleep_for(250ms);
-        }
       }
-
-    else if (demo_ == "cartesian_ik") {
+    } else if (demo_ == "cartesian_ik") {
       RCLCPP_INFO(get_logger(), "Running cartesian ik demo...");
 
-      auto lerp_waypoints = 
-      [](const std::vector<std::vector<float>> waypoints, int n = 30)
+      auto lerp_waypoints =
+        [](const std::vector<std::vector<float>> waypoints, int n = 30)
         {
           std::vector<std::vector<float>> points;
-            for (int i = 1; i < int(waypoints.size()); ++i) {
-                auto start = waypoints.at(i-1);
-                auto end = waypoints.at(i);
-                for (int j = 0; j <= n; j++) {
-                  float t = static_cast<float>(j) / n;
-                  points.push_back({
-                      start[0] + t * (end[0] - start[0]),
-                      start[1] + t * (end[1] - start[1]),
-                      start[2] + t * (end[2] - start[2])});
-                }
+          for (int i = 1; i < int(waypoints.size()); ++i) {
+            auto start = waypoints.at(i - 1);
+            auto end = waypoints.at(i);
+            for (int j = 0; j <= n; j++) {
+              float t = static_cast<float>(j) / n;
+              points.push_back({
+              start[0] + t * (end[0] - start[0]),
+              start[1] + t * (end[1] - start[1]),
+              start[2] + t * (end[2] - start[2])});
             }
-         
-        return points;
-      };
+          }
+
+          return points;
+        };
 
       send_cartesian_goal(1, lerp_waypoints(ik_waypoints_));
-    }
-
-    else if (demo_ == "chirp") {
+    } else if (demo_ == "chirp") {
       RCLCPP_INFO(get_logger(), "Running chirp demo...");
 
-      send_chirp_goal(chirp_joint_, chirp_amp_, chirp_freq_init_, chirp_freq_final_, chirp_time_, chirp_v_offset_);
-    }
-
-    else if (demo_ == "chirp_velocity") {
+      send_chirp_goal(chirp_joint_, chirp_amp_, chirp_freq_init_, chirp_freq_final_, chirp_time_,
+        chirp_v_offset_);
+    } else if (demo_ == "chirp_velocity") {
       RCLCPP_INFO(get_logger(), "Running chirp velocity demo...");
 
-      std::vector<float> start_pos(chirp_velocity_start_pos_.begin(), chirp_velocity_start_pos_.end());
+      std::vector<float> start_pos(chirp_velocity_start_pos_.begin(),
+        chirp_velocity_start_pos_.end());
 
-      send_chirp_velocity_goal(chirp_velocity_joint_, chirp_velocity_vel_amp_, chirp_velocity_freq_init_, chirp_velocity_freq_final_, chirp_velocity_time_, start_pos);
-    }
-
-    else if (demo_ == "lissajous") {
+      send_chirp_velocity_goal(chirp_velocity_joint_, chirp_velocity_vel_amp_,
+        chirp_velocity_freq_init_, chirp_velocity_freq_final_, chirp_velocity_time_, start_pos);
+    } else if (demo_ == "lissajous") {
       RCLCPP_INFO(get_logger(), "Running lissajous demo...");
-      auto lissajous = 
+      auto lissajous =
         [this](float y_offset = 0.07, float z_offset = -0.07, float f = 0.5, int hz = 100) {
 
-            auto n = int(hz / f);
-            RCLCPP_INFO_STREAM(get_logger(), n);
-            std::vector<std::vector<float>> points;
-            for (int i = 0; i <= n; ++i) {
-                float t = static_cast<float>(i) /  n;
-                points.push_back({
-                    0.0f, // motion is in the x plane
-                    1.5f * std::sinf(2 * M_PI * t) / 100.0f + y_offset,
-                    1.5f * std::sinf(2 * M_PI* 2 * t + 3 * M_PI / 4) / 100.0f + z_offset - 0.0161f
+          auto n = int(hz / f);
+          RCLCPP_INFO_STREAM(get_logger(), n);
+          std::vector<std::vector<float>> points;
+          for (int i = 0; i <= n; ++i) {
+            float t = static_cast<float>(i) / n;
+            points.push_back({
+            0.0f,         // motion is in the x plane
+            1.5f * std::sinf(2 * M_PI * t) / 100.0f + y_offset,
+            1.5f * std::sinf(2 * M_PI * 2 * t + 3 * M_PI / 4) / 100.0f + z_offset - 0.0161f
                 });
-            }
-            return points;
+          }
+          return points;
         };
 
       send_cartesian_goal(true, lissajous());
@@ -281,13 +256,15 @@ private:
     param_desc.description = "The starting position for chirp velocity demo (in radians).";
     declare_parameter("chirp_velocity.start_pos", std::vector<double>{0.0, 0.0, 0.0}, param_desc);
 
-    param_desc.description = "The list of 3-vector waypoints in joint space for linear move demo <splay, mcp, pipdip> in radians.";
+    param_desc.description =
+      "The list of 3-vector waypoints in joint space for linear move demo <splay, mcp, pipdip> in radians.";
     declare_parameter("linear.waypoints", std::vector<double>{0.0, 0.0, 0.0}, param_desc);
 
     param_desc.description = "Boolean (1 or 0) to indicate if linear demo should be repeated.";
     declare_parameter("linear.repeat", 0, param_desc);
 
-    param_desc.description = "The list of 3 vector positions in joint space for linear step move demo in radians.";
+    param_desc.description =
+      "The list of 3 vector positions in joint space for linear step move demo in radians.";
     declare_parameter("linear_step.waypoints", std::vector<double>{0.0, 0.0, 0.0}, param_desc);
 
     param_desc.description = "The frequency to alterate linear step at for the linear step demo.";
@@ -302,7 +279,8 @@ private:
     param_desc.description = "Boolean (1 or 0) to indicate if force demo should be repeated.";
     declare_parameter("force.repeat", 0, param_desc);
 
-    param_desc.description = "The joint space state for force demo <splay, mcp, pipdip> in radians.";
+    param_desc.description =
+      "The joint space state for force demo <splay, mcp, pipdip> in radians.";
     declare_parameter("force.q_state", std::vector<double>{0.0, 0.0, 0.0}, param_desc);
 
     param_desc.description = "The low force for the force demo <F_x, F_y, F_z> in newtons.";
@@ -314,7 +292,8 @@ private:
     param_desc.description = "Boolean (1 or 0) to indicate if ik demo should be repeated..";
     declare_parameter("ik.repeat", 0, param_desc);
 
-    param_desc.description = "The list of 3 vector positions in cartesian space for linear step move demo in radians.";
+    param_desc.description =
+      "The list of 3 vector positions in cartesian space for linear step move demo in radians.";
     declare_parameter("ik.waypoints", std::vector<double>{0.0, 0.0, 0.0}, param_desc);
 
 
@@ -347,25 +326,26 @@ private:
     ik_repeat_ = get_parameter("ik.repeat").as_int();
 
     // get linear step waypoints
-    std::vector<double> flat_linear_step_waypoints = get_parameter("linear_step.waypoints").as_double_array();
-    for (auto i = 0; i < int(flat_linear_step_waypoints.size()); i+=3) {
+    std::vector<double> flat_linear_step_waypoints =
+      get_parameter("linear_step.waypoints").as_double_array();
+    for (auto i = 0; i < int(flat_linear_step_waypoints.size()); i += 3) {
       linear_step_waypoints_.push_back({float(flat_linear_step_waypoints.at(i)),
-                                        float(flat_linear_step_waypoints.at(i+1)),
-                                        float(flat_linear_step_waypoints.at(i+2))});
+          float(flat_linear_step_waypoints.at(i + 1)),
+          float(flat_linear_step_waypoints.at(i + 2))});
     }
 
-    std::vector<double> flat_linear_waypoints= get_parameter("linear.waypoints").as_double_array();
-    for (auto i = 0; i < int(flat_linear_waypoints.size()); i+=3) {
+    std::vector<double> flat_linear_waypoints = get_parameter("linear.waypoints").as_double_array();
+    for (auto i = 0; i < int(flat_linear_waypoints.size()); i += 3) {
       linear_waypoints_.push_back({float(flat_linear_waypoints.at(i)),
-                                   float(flat_linear_waypoints.at(i+1)),
-                                   float(flat_linear_waypoints.at(i+2))});
+          float(flat_linear_waypoints.at(i + 1)),
+          float(flat_linear_waypoints.at(i + 2))});
     }
 
-    std::vector<double> flat_ik_waypoints= get_parameter("ik.waypoints").as_double_array();
-    for (auto i = 0; i < int(flat_ik_waypoints.size()); i+=3) {
+    std::vector<double> flat_ik_waypoints = get_parameter("ik.waypoints").as_double_array();
+    for (auto i = 0; i < int(flat_ik_waypoints.size()); i += 3) {
       ik_waypoints_.push_back({float(flat_ik_waypoints.at(i)),
-                               float(flat_ik_waypoints.at(i+1)),
-                               float(flat_ik_waypoints.at(i+2))});
+          float(flat_ik_waypoints.at(i + 1)),
+          float(flat_ik_waypoints.at(i + 2))});
     }
 
   }

@@ -30,7 +30,6 @@ from finger_simulation.systems.motor_radius_system import (
 )
 from finger_simulation.systems.ros2drake_system_kinematic import Ros2Drake
 
-
 import numpy as np
 
 import pydot
@@ -133,12 +132,6 @@ class FingerSimulation():
             url='package://finger_description/urdf/finger3.urdf')
         self.plant.RenameModelInstance(
             model_instance=self.finger, name='actual_finger')
-        # parser.AddModels(
-        #     url='package://finger_simulation/models/grasspatch/model.sdf')
-        # parser.AddModels(
-        #     url='package://finger_simulation/models/Standard_Toilet/model.sdf')
-        # self.box, = parser.AddModels(
-        #     url='package://finger_simulation/models/box/model.sdf')
 
         base_frame = self.plant.GetFrameByName('base_link', self.finger)
         self.plant.WeldFrames(self.plant.world_frame(),
@@ -146,47 +139,7 @@ class FingerSimulation():
                               RigidTransform(RollPitchYaw([0, 0, 0]),
                                              np.array([0, 0, .2])))
 
-        # box_frame = self.plant.GetFrameByName('box_frame', self.box)
-        # self.plant.WeldFrames(self.plant.world_frame(),
-        #                       box_frame,
-        #                       RigidTransform(RollPitchYaw([0, 0, 0]),
-        #                                      np.array([0, 0.2, .05])))
-
-        # close loop for four bar
-        # middle_phalanx2 = self.plant.GetBodyByName(
-        #     'middle_phalanx2', self.finger)
-        # distal_phalanx = self.plant.GetBodyByName(
-        #     'distal_phalanx', self.finger)
-
-        # # dip_flex2 in middle_phalanx2 frame
-        # p_AP = np.array([0.0001,  0.0348, -0.0147])
-
-        # # dip_flex2 in distal_phalanx frame
-        # p_BQ = np.array([-0.0054, 0.0022, -0.0087])
-
-        # self.plant.AddBallConstraint(
-        #     body_A=middle_phalanx2,
-        #     p_AP=p_AP,
-        #     body_B=distal_phalanx,
-        #     p_BQ=p_BQ,
-        # )
         self.plant.Finalize()
-
-        # turn off gravity
-        # self.plant.mutable_gravity_field().set_gravity_vector([0, 0, 10.0])
-
-        # # set up other object locations
-        # grasspatch_frame = self.plant.GetFrameByName('grasspatch_frame')
-        # plant_context = self.plant.CreateDefaultContext()
-        # tf_world_grasspatch = grasspatch_frame.CalcPoseInWorld(plant_context)
-
-        # standard_toilet_body = self.plant.GetBodyByName('toilet_base_link')
-        # tf_grasspatch_toilet = RigidTransform(
-        #     RollPitchYaw(np.asarray([45, 30, 0]) * np.pi / 180),
-        #     p=[1.0, 0, 0.8])
-        # tf_world_toilet = tf_world_grasspatch.multiply(tf_grasspatch_toilet)
-        # self.plant.SetDefaultFloatingBaseBodyPose(
-        #     standard_toilet_body, tf_world_toilet)
 
     def constant_torques(self):
         """Initialize joint torque inputs."""
@@ -255,20 +208,6 @@ class FingerSimulation():
 
     def debug(self):
         """Debug print messages."""
-        # nq = self.plant.num_positions(self.finger)
-        # nv = self.plant.num_velocities(self.finger)
-        # print(f'finger: nq={nq}, nv={nv}, state size={nq+nv}')
-        # print()
-        # print('Joints in this model instance:')
-        # for i in range(self.plant.num_joints()):
-        #     j = self.plant.get_joint(JointIndex(i))
-        #     if j.model_instance() != self.finger:
-        #         continue
-        #     print(f'  {j.name():30s} type={type(j).__name__:20s} '
-        #           f'nq={j.num_positions()} nv={j.num_velocities()} '
-        #           f'q_start={j.position_start()} v_start={
-        #                 j.velocity_start()}')
-
         # # get contact forces on box
         contact_results = self.plant.get_contact_results_output_port()\
             .Eval(self.plant_context)
@@ -301,7 +240,7 @@ def main():
     rclpy.init(args=None)
     node = rclpy.create_node('drakesim')
 
-       # add external systems
+    # add external systems
     ros2drake_system = fingersim.builder.AddSystem(Ros2Drake(node, False))
 
     motor_torque_to_force_system = fingersim.builder.AddSystem(
@@ -323,38 +262,11 @@ def main():
         motor_torque_to_force_system.GetOutputPort('tendon_position'),
         motor_tension_to_joint_torque_system.GetInputPort('tendon_position'),
     )
-    # fingersim.builder.Connect(
-    #     motor_tension_to_joint_torque_system.GetOutputPort('joint_torque'),
-    #     fingersim.plant.get_actuation_input_port(fingersim.finger),
-    # )
-    # fingersim.builder.Connect(
-    #     motor_tension_to_joint_torque_system.GetOutputPort('joint_position'),
-    #     fingersim.plant.get_(fingersim.finger),
-    # )
+
     fingersim.builder.Connect(
         fingersim.plant.get_state_output_port(fingersim.finger),
         drake2ros_system.GetInputPort('finger_state'),
     )
-    # fingersim.builder.Connect(
-    #     motor_torque_to_force_system.GetOutputPort('tendon_tension'),
-    #     tendon_feedback_system.GetInputPort('tendon_tension'),
-    # )
-    # fingersim.builder.Connect(
-    #     tendon_feedback_system.GetOutputPort('tendon_velocity'),
-    #     motor_feedback_system.GetInputPort('tendon_velocity'),
-    # )
-    # fingersim.builder.Connect(
-    #     tendon_feedback_system.GetOutputPort('tendon_position'),
-    #     motor_feedback_system.GetInputPort('tendon_position'),
-    # )
-    # fingersim.builder.Connect(
-    #     motor_feedback_system.GetOutputPort('motor_velocity'),
-    #     drake2ros_system.GetInputPort('motor_velocity'),
-    # )
-    # fingersim.builder.Connect(
-    #     motor_feedback_system.GetOutputPort('motor_position'),
-    #     drake2ros_system.GetInputPort('motor_position'),
-    # )
 
     fingersim.build_diagram()
     # fingersim.save_diagram()

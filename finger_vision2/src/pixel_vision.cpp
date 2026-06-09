@@ -42,19 +42,20 @@ using namespace std::chrono_literals;
 std::mt19937 & get_random()
 {
     // static variables inside a function are created once and persist for the remainder of the program
-    static std::random_device rd{}; 
-    static std::mt19937 mt{rd()};
+  static std::random_device rd{};
+  static std::mt19937 mt{rd()};
 
     // we return a reference to the pseudo-random number genrator object. This is always the
     // same object every time get_random is called
-    return mt;
+  return mt;
 }
 
 /// \brief State of target
-enum TargetState {
-    NEW,
-    PUBLISHING,
-    NONE
+enum TargetState
+{
+  NEW,
+  PUBLISHING,
+  NONE
 };
 
 /// \brief Publishes random points for the finger to go towards
@@ -86,7 +87,8 @@ public:
     phone_tf_.transform.translation.y = get_parameter("tf.trans.y").as_double();
     phone_tf_.transform.translation.z = get_parameter("tf.trans.z").as_double();
     tf2::Quaternion q;
-    q.setRPY(get_parameter("tf.rot.roll").as_double(), get_parameter("tf.rot.pitch").as_double(), get_parameter("tf.rot.yaw").as_double());
+    q.setRPY(get_parameter("tf.rot.roll").as_double(), get_parameter("tf.rot.pitch").as_double(),
+      get_parameter("tf.rot.yaw").as_double());
     phone_tf_.transform.rotation.x = q.x();
     phone_tf_.transform.rotation.y = q.y();
     phone_tf_.transform.rotation.z = q.z();
@@ -98,7 +100,8 @@ public:
     phone_corner_tf_.header.frame_id = "phone_frame";
     phone_corner_tf_.child_frame_id = "phone_corner";
     phone_corner_tf_.transform.translation.x = (402.0 / 2.0) / pixels_per_meter_;
-    phone_corner_tf_.transform.translation.y = ((714.0 / 2.0) / pixels_per_meter_) +  get_parameter("x_offset").as_double();
+    phone_corner_tf_.transform.translation.y = ((714.0 / 2.0) / pixels_per_meter_) +
+      get_parameter("x_offset").as_double();
     phone_corner_tf_.transform.translation.z = -get_parameter("fingertip_radius").as_double();
     q.setRPY(0.0, 0.0, 3.14);
     phone_corner_tf_.transform.rotation.x = q.x();
@@ -129,36 +132,39 @@ public:
       };
 
 
-    target_feedback_sub_ = create_subscription<whackamole_interfaces::msg::Point>("/whackamole/target", 10, target_feedback_sub_cb_);
-    hit_feedback_sub_ = create_subscription<std_msgs::msg::Int32>("/whackamole/hit_ms", 10, hit_feedback_sub_cb_);
+    target_feedback_sub_ =
+      create_subscription<whackamole_interfaces::msg::Point>("/whackamole/target", 10,
+      target_feedback_sub_cb_);
+    hit_feedback_sub_ = create_subscription<std_msgs::msg::Int32>("/whackamole/hit_ms", 10,
+      hit_feedback_sub_cb_);
 
     auto timer_callback =
       [this]()-> void {
-        
+
         switch (target_state_) {
 
-            case TargetState::NEW:
-            
+          case TargetState::NEW:
+
                 // update stored marker from new detection
-                updateMarker();
+            updateMarker();
 
                 // update state
-                target_state_ = TargetState::PUBLISHING;
-                break;
-            case TargetState::PUBLISHING:
+            target_state_ = TargetState::PUBLISHING;
+            break;
+          case TargetState::PUBLISHING:
 
                 // republish current marker and goal tf until the next detection arrives
-                marker_.header.stamp = now();
-                marker_pub_->publish(marker_);
-                goal_tf_.header.stamp = now();
-                tf_broadcaster_->sendTransform(goal_tf_);
-                break;
+            marker_.header.stamp = now();
+            marker_pub_->publish(marker_);
+            goal_tf_.header.stamp = now();
+            tf_broadcaster_->sendTransform(goal_tf_);
+            break;
 
-            case TargetState::NONE:
+          case TargetState::NONE:
                 // do nothing
-                break;
+            break;
 
-    }
+        }
       };
 
     timer_ = create_wall_timer(1ms, timer_callback);
@@ -228,4 +234,4 @@ int main(int argc, char * argv[])
   rclcpp::spin(std::make_shared<PixelVision>());
   rclcpp::shutdown();
   return 0;
-};
+}

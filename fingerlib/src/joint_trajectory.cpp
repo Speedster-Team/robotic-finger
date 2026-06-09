@@ -52,7 +52,7 @@ std::vector<arma::vec> JointTrajectory::generate_chirp(
 
   for(double t = 0; t < time; t += 1.0 / _sampling_rate) {
 
-    double sine_value = amp * std::sin(2 * M_PI * (freq_1*t + c*t*t/2)) + v_shift;
+    double sine_value = amp * std::sin(2 * M_PI * (freq_1 * t + c * t * t / 2)) + v_shift;
 
     arma::vec q_joint(3, arma::fill::zeros);
 
@@ -78,7 +78,7 @@ std::vector<arma::vec> JointTrajectory::generate_step(
   int total_waypoints = waypoints.size();
 
   std::vector<arma::vec> q_motor_list;
-  
+
   q_motor_list.reserve(N);
 
   for (int i = 0; i < N; i++) {
@@ -101,7 +101,8 @@ std::vector<arma::vec> JointTrajectory::generate_linear(
     auto end = waypoints.at(i);
 
     double s = arma::norm(end - start);
-    double Tf = s < (v_max * v_max) / a_max ? 2.0 * std::sqrt(s / a_max) : s / v_max + v_max / a_max;
+    double Tf = s <
+      (v_max * v_max) / a_max ? 2.0 * std::sqrt(s / a_max) : s / v_max + v_max / a_max;
 
     int N = std::ceil(Tf * (double)_sampling_rate);
 
@@ -145,9 +146,9 @@ std::vector<arma::vec> JointTrajectory::generate_cartesian(
 }
 
 std::vector<arma::vec> JointTrajectory::generate_force_step(
-  const arma::vec & q_joint, 
-  const arma::vec & force_low, 
-  const arma::vec & force_high, 
+  const arma::vec & q_joint,
+  const arma::vec & force_low,
+  const arma::vec & force_high,
   double freq)
 {
 
@@ -167,7 +168,7 @@ std::vector<arma::vec> JointTrajectory::generate_force_step(
     wrench.tail(3) = force_value;
 
     auto J_t = J.t();
- 
+
     auto t_joint = J_t * wrench;  // Convert force to joint torques
 
     auto t_motor = _transforms.joint_to_motor_torque(t_joint);
@@ -197,9 +198,9 @@ std::vector<arma::vec> JointTrajectory::generate_chirp_velocity(
 
   for(double t = 0; t < time; t += 1.0 / _sampling_rate) {
 
-    double sine_value = amp * std::sin(2 * M_PI * (freq_1*t + c*t*t/2));
+    double sine_value = amp * std::sin(2 * M_PI * (freq_1 * t + c * t * t / 2));
 
-    joint_angle += sine_value * (1.0/_sampling_rate);  // integrate velocity to get position
+    joint_angle += sine_value * (1.0 / _sampling_rate);  // integrate velocity to get position
 
     arma::vec q_joint(3, arma::fill::zeros);
     arma::vec q_pos_test(3, arma::fill::zeros);

@@ -31,7 +31,6 @@ class MotorTorqueToForceSystem(LeafSystem):
             'motor_position', nu)
         self.DeclareVectorOutputPort('tendon_position', nu, self._calc_linear)
 
-
     def _calc_force(self, context, output):
         """Convert motor torque to tendon forces."""
         torque = self.torque_input_port.Eval(context)
